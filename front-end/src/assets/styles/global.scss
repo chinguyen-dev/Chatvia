@@ -1,0 +1,51 @@
+@import "normalize.css";
+@import "../fonts/style.scss";
+@import "remixicon/fonts/remixicon.css";
+@import "vue3-toastify/dist/index.css";
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: $font-Public-Sans;
+    font-size: $font-size-default;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+    color: #495057;
+    background-color: #f7f7ff;
+}
+
+p {
+    font-family: $font-Public-Sans;
+}
+
+input {
+    outline: none;
+}
+
+input:focus {
+    box-shadow: none !important;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+.bg-soft-light {
+    background-color: rgba(230, 235, 245, 0.25) !important;
+}
+
+.text-primary {
+    color: #7269ef !important;
+}

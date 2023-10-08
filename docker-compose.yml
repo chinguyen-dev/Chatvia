@@ -1,0 +1,31 @@
+services:
+
+  backend:
+    container_name: chat-backend
+    build:
+      context: ./back-end/.
+      dockerfile: Dockerfile
+    volumes:
+      - ./back-end:/var/www/websocket-server
+      - ./conf/vhost-server.conf:/etc/apache2/sites-available/000-default.conf
+    ports:
+      - 9000:80
+      - 6001:6001
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: mysql-php-8.1
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dbchat   
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - 9001:80
+    environment:
+      - PMA_ARBITRARY=1
