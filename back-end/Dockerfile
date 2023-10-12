@@ -20,10 +20,10 @@ RUN apt-get update -y && apt-get install -y \
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+COPY ./websockets.conf /etc/supervisor/conf.d/websockets.conf
 
 # PHP Extension
 RUN docker-php-ext-install gettext intl pdo_mysql gd
-
 
 RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
