@@ -23,7 +23,7 @@ const handleLogin = async (payload) => {
       user,
       token,
     });
-    router.push("/");
+    await router.push("/");
   } catch (error) {
     toast.error("Failed to login");
   }
@@ -38,4 +38,4 @@ const handleLogin = async (payload) => {
   />
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped />

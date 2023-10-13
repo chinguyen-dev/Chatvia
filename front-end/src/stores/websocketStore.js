@@ -45,6 +45,7 @@ export const useWebsocketStore = defineStore("websocket", {
         },
       });
       localStorage.setItem(import.meta.env.VITE_STORAGE_SOCKET, this.socket);
+      this.on = true;
     },
   },
 });

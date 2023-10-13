@@ -13,7 +13,7 @@ body {
     font-weight: 400;
     line-height: 1.5;
     margin: 0;
-    color: #495057;
+    color: $color-gray;
     background-color: #f7f7ff;
 }
 
@@ -22,7 +22,11 @@ p {
 }
 
 input {
+    color: $color-gray;
+    padding: 0;
     outline: none;
+    border: none;
+    font-family: $font-Public-Sans;
 }
 
 input:focus {
@@ -47,5 +51,16 @@ ul {
 }
 
 .text-primary {
-    color: #7269ef !important;
+    color: $color-purple !important;
+}
+
+h4 {
+    font-size: 1.3125rem;
+    font-weight: 600;
+    color: $color-gray;
+    text-transform: capitalize;
+    font-family: $font-Public-Sans;
+}
+button {
+    border: none;
 }

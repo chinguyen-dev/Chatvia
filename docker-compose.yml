@@ -3,11 +3,10 @@ services:
   backend:
     container_name: chat-backend
     build:
-      context: ./back-end/.
+      context: ./back-end/docker/.
       dockerfile: Dockerfile
     volumes:
-      - ./back-end:/var/www/websocket-server
-      - ./conf/vhost-server.conf:/etc/apache2/sites-available/000-default.conf
+      - ./back-end:/var/www
     ports:
       - 9000:80
       - 6001:6001
