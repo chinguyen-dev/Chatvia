@@ -7,7 +7,6 @@ import { autoImportIcons } from "./utils/fontawesome";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/styles/global.scss";
-
 window.Pusher = Pusher;
 const pinia = createPinia();
 const app = createApp(App).use(router).use(pinia);

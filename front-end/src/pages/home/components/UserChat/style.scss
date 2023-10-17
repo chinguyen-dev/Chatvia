@@ -1,0 +1,20 @@
+.chat-user {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 20px;
+    cursor: pointer;
+}
+.content {
+    flex: 1;
+
+    p {
+        font-size: 14px;
+    }
+}
+
+h5 {
+    font-size: 15px;
+}
+.time {
+    font-size: 11px;
+}

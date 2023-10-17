@@ -1,0 +1,35 @@
+.avatar {
+    $sizeStatus: 10px;
+    $backgroundStatus: #06d6a0;
+    $sizeAvatar: 35px;
+
+    position: relative;
+    height: 100%;
+    width: $sizeAvatar;
+    height: $sizeAvatar;
+    margin: 0 auto;
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    &__title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        font-weight: 500;
+        background-color: rgba(114, 105, 239, 0.25);
+    }
+
+    .status {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        width: $sizeStatus;
+        height: $sizeStatus;
+        background-color: $backgroundStatus;
+    }
+}

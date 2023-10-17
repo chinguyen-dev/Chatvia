@@ -64,23 +64,11 @@
         .dropdown {
             position: relative;
             margin: 7px 0;
-
             button {
                 border: none;
 
                 &:focus {
                     box-shadow: 0 0 0 0.15rem rgba(114, 105, 239, 0.25);
-                }
-            }
-
-            .dropdown-item {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                cursor: pointer;
-
-                &:active {
-                    background-color: #fff;
                 }
             }
         }

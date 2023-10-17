@@ -3,10 +3,20 @@ import userService from "@/services/userService";
 import { useRouter } from "vue-router";
 import { toast } from "vue3-toastify";
 import { useWebsocketStore } from "@/stores/websocketStore";
+import { useUserStore } from "@/stores/userStore";
+import { defineAsyncComponent } from "vue";
 
 const router = useRouter();
 const websocketStore = useWebsocketStore();
+const userStore = useUserStore();
 websocketStore.connection();
+
+const Avatar = defineAsyncComponent(() =>
+  import("./components/Avatar/index.vue")
+);
+const ChatBox = defineAsyncComponent(() =>
+  import("./components/ChatBox/index.vue")
+);
 
 const handleLogout = async () => {
   try {
@@ -22,6 +32,7 @@ const handleLogout = async () => {
 
 <template>
   <div class="wrapper">
+    <!--Sidebar.start-->
     <div class="side-menu">
       <div class="navbar-brand-box">
         <a href="">
@@ -32,7 +43,6 @@ const handleLogout = async () => {
           />
         </a>
       </div>
-
       <div class="my-auto">
         <ul class="menu-list">
           <li>
@@ -76,11 +86,7 @@ const handleLogout = async () => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <img
-                class="profile-user"
-                src="http://chatvia-light.vue.themesbrand.com/img/avatar-1.67e2b9d7.jpg"
-                alt=""
-              />
+              <Avatar :user="userStore.user" :hidden="false" />
             </button>
             <ul class="dropdown-menu">
               <li>
@@ -106,11 +112,16 @@ const handleLogout = async () => {
         </ul>
       </div>
     </div>
-    <div class="chat-leftsidebar">
+    <!--Sidebar.End-->
+
+    <!--Chat.list.start-->
+    <div class="chat-leftsidebar me-1">
       <div class="tab-content">
         <router-view />
       </div>
     </div>
+    <!--Chat.list.end-->
+    <ChatBox />
   </div>
 </template>
 

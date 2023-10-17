@@ -54,7 +54,8 @@ ul {
     color: $color-purple !important;
 }
 
-h4 {
+h4,
+h5 {
     font-size: 1.3125rem;
     font-weight: 600;
     color: $color-gray;
@@ -63,4 +64,21 @@ h4 {
 }
 button {
     border: none;
+}
+
+.dropdown {
+    button {
+        border: none;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+
+        &:active {
+            background-color: #fff;
+        }
+    }
 }
