@@ -1,7 +1,30 @@
 <script setup>
-import { defineAsyncComponent } from "vue";
-
+import { defineAsyncComponent, ref } from "vue";
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
+// import picker compopnent
+const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
+// import css
+import "vue3-emoji-picker/css";
+
+const { onsubmit } = defineProps({
+  onsubmit: {
+    type: Function,
+    default: null,
+  },
+});
+
+const emoji = ref(false);
+const input = ref("");
+
+const onSelectEmoji = (emoji) => (input.value = `${input.value}${emoji.i}`);
+
+const handleToggleEmoji = () => (emoji.value = !emoji.value);
+
+const handleOnSubmit = () => {
+  if (!onsubmit) return;
+  onsubmit(input.value);
+  input.value = "";
+};
 </script>
 
 <template>
@@ -234,7 +257,36 @@ const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
       </div>
     </div>
 
-    <div class="footer border-top">a</div>
+    <div class="footer p-4 border-top">
+      <form @submit.prevent="handleOnSubmit">
+        <input type="text" placeholder="Type message" v-model="input" />
+        <div class="footer__right">
+          <div
+            class="modal-emoji"
+            v-show="emoji"
+            @click="handleToggleEmoji"
+          ></div>
+          <EmojiPicker v-show="emoji" :native="true" @select="onSelectEmoji" />
+          <div class="emoji">
+            <button
+              type="button"
+              class="text-primary"
+              @click="handleToggleEmoji"
+            >
+              <i class="ri-emotion-happy-line"></i>
+            </button>
+          </div>
+          <div class="attach">
+            <button type="button" class="text-primary">
+              <i class="ri-attachment-line"></i>
+            </button>
+          </div>
+          <button type="submit" class="btn">
+            <i class="ri-send-plane-2-fill"></i>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 

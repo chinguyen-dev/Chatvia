@@ -24,6 +24,7 @@
     "vee-validate": "^4.11.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4",
+    "vue3-emoji-picker": "^1.1.8",
     "vue3-toastify": "^0.1.13",
     "yup": "^1.2.0"
   },

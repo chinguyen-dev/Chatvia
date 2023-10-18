@@ -20,13 +20,13 @@ const handleOnSearch = (payload) => console.log(payload);
   <div class="wrapper">
     <div class="px-4 pt-4">
       <h4 class="mb-4">chats</h4>
-      <!-- Search Box-->
+      <!-- Search Box -->
       <SearchBox
         type="text"
         :on-submit="handleOnSearch"
         placeholder="Search messages or users"
       />
-      <!-- User Carousel-->
+      <!-- User Carousel -->
       <div class="px-1 pb-4 mt-3">
         <UserCarousel :users="chatStore.users" />
       </div>
@@ -46,36 +46,4 @@ const handleOnSearch = (payload) => console.log(payload);
   </div>
 </template>
 
-<style lang="scss" scoped>
-h5 {
-  font-size: 16px;
-}
-.wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-.box-chat {
-  position: relative;
-  height: calc(100vh - 280px);
-}
-.chat-list {
-  position: absolute;
-  padding: 0;
-  margin: 0;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  overflow: hidden scroll;
-
-  &::-webkit-scrollbar {
-    width: 7px;
-  }
-  &::-webkit-scrollbar-thumb {
-    height: 205px;
-    border-radius: 7px;
-    background-color: #d0dae3;
-    cursor: pointer;
-  }
-}
-</style>
+<style src="./style.scss" lang="scss" scoped />

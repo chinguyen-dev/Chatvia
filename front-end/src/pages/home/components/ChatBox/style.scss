@@ -10,7 +10,7 @@
 
 .chat-conversation {
     position: relative;
-    height: calc(100vh - 184px);
+    height: calc(100vh - 174px);
 
     .content {
         position: absolute;
@@ -117,5 +117,53 @@
                 right: 0;
             }
         }
+    }
+}
+.footer {
+    form {
+        display: flex;
+        align-items: center;
+    }
+
+    &__right {
+        display: flex;
+        position: relative;
+        align-items: center;
+        margin-left: 5px;
+
+        .modal-emoji {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .v3-emoji-picker {
+            position: absolute;
+            right: 0;
+            bottom: 66px;
+            z-index: 11;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 0.47rem 0.75rem;
+            background-color: transparent;
+        }
+
+        & > button {
+            color: #fff;
+            font-size: 16px;
+            background-color: $color-purple;
+        }
+    }
+
+    input {
+        height: 40px;
+        width: 100%;
+        padding: 12px 16px 12px 12px;
+        background-color: #e6ebf5;
     }
 }
