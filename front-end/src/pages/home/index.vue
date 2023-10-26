@@ -1,36 +1,19 @@
 <script setup>
-import userService from "@/services/userService";
-import { useRouter } from "vue-router";
-import { toast } from "vue3-toastify";
-import { useWebsocketStore } from "@/stores/websocketStore";
 import { defineAsyncComponent } from "vue";
 
-const router = useRouter();
-const websocketStore = useWebsocketStore();
-websocketStore.connection();
+import { useAuth } from "@/composables/authComposable";
+import { useChat } from "@/composables/chatComposable";
+
+const { handleLogout } = useAuth();
+const { handleSendChat, loading, chatStore } = useChat();
 
 const ChatBox = defineAsyncComponent(() =>
   import("./components/ChatBox/index.vue")
 );
-
 const Sidebar = defineAsyncComponent(() =>
   import("./components/Sidebar/index.vue")
 );
-
-const handleLogout = async () => {
-  try {
-    await userService.logout();
-    localStorage.removeItem(import.meta.env.VITE_STORAGE_TOKEN);
-    localStorage.removeItem(import.meta.env.VITE_STORAGE_USER);
-    router.push("/login");
-  } catch (error) {
-    toast.error("Logout failed");
-  }
-};
-
-const handleSendChat = (msg) => {
-  console.log(msg);
-};
+const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
 </script>
 
 <template>
@@ -48,8 +31,10 @@ const handleSendChat = (msg) => {
     <!--Chat.list.end-->
 
     <!--Chat.box.start-->
-    <ChatBox :onsubmit="handleSendChat" />
+    <ChatBox :onsubmit="handleSendChat" :chat="chatStore.recentChat" />
     <!--Chat.box.end-->
+
+    <Loading v-if="loading" />
   </div>
 </template>
 

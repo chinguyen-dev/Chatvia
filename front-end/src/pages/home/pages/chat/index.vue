@@ -1,8 +1,8 @@
 <script setup>
+import { useChat } from "@/composables/chatComposable";
 import { defineAsyncComponent } from "vue";
-import { useChatStore } from "../../../../stores/chatStore";
 
-const chatStore = useChatStore();
+const { handleOnSearch, setRecentChat, chatStore } = useChat();
 
 const SearchBox = defineAsyncComponent(() =>
   import("../../components/SearchBox/index.vue")
@@ -13,7 +13,6 @@ const UserCarousel = defineAsyncComponent(() =>
 const UserChat = defineAsyncComponent(() =>
   import("../../components/UserChat/index.vue")
 );
-const handleOnSearch = (payload) => console.log(payload);
 </script>
 
 <template>
@@ -28,7 +27,7 @@ const handleOnSearch = (payload) => console.log(payload);
       />
       <!-- User Carousel -->
       <div class="px-1 pb-4 mt-3">
-        <UserCarousel :users="chatStore.users" />
+        <!-- <UserCarousel :users="chatStore.data" /> -->
       </div>
     </div>
     <div class="px-2">
@@ -36,8 +35,12 @@ const handleOnSearch = (payload) => console.log(payload);
       <div class="box-chat">
         <div class="chat-list">
           <ul class="chat-user-list">
-            <li v-for="user in chatStore.users" :key="user.id">
-              <UserChat :user="user" />
+            <li
+              v-for="chat in chatStore.chatList"
+              :key="chat.id"
+              @click="setRecentChat(chat)"
+            >
+              <UserChat :user="chat.members[0]" />
             </li>
           </ul>
         </div>

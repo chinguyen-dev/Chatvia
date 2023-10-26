@@ -1,8 +1,9 @@
 <script setup>
 import { defineAsyncComponent } from "vue";
-defineProps({
+const { user } = defineProps({
   user: Object,
 });
+
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 </script>
 

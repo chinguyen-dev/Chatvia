@@ -10,15 +10,15 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'chat_id',
-        'sender_id',
-        'content',
-        'seen'
-    ];
+    protected $fillable = ['sender_id', 'receiver_id', 'conversation_id', 'content'];
+
+    public function conversation(): BelongsTo
+    {
+        return $this->belongsTo(Conversation::class, 'conversation_id');
+    }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'sender_id')->orWhere('receiver_id', $this->receiver_id);
     }
 }

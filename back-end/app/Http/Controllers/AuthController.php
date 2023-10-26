@@ -33,7 +33,7 @@ class AuthController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-        return $user->createToken($request->email)->plainTextToken;
+        return response()->json(['data' => $user->createToken($request->email)->plainTextToken]);
     }
 
     public function logout(Request $request): JsonResponse

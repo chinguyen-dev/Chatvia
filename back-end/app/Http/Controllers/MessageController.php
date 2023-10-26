@@ -2,25 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ChatResource;
-use App\Services\ChatService;
 use Illuminate\Http\Request;
 
-class ChatController extends Controller
+class MessageController extends Controller
 {
-    private ChatService $chatService;
-
-    public function __construct(ChatService $chatService)
-    {
-        $this->chatService = $chatService;
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return ChatResource::collection($this->chatService->getConversations());
+        //
     }
 
     /**
@@ -36,13 +27,7 @@ class ChatController extends Controller
      */
     public function store(Request $request)
     {
-        $conversation = $this->chatService->createConversation($request->all());
-        return new ChatResource($conversation);
-    }
-
-    public function sendChat(Request $request)
-    {
-        return $this->chatService->sendMessage($request->all());
+        //
     }
 
     /**

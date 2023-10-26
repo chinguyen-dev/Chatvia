@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -21,18 +22,16 @@ Broadcast::routes(['middleware' => ['auth:sanctum']]);
 Route::prefix('/v1')->group(function () {
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/user', function (Request $request) {
-            return $request->user();
+            return response()->json([
+                'data' => $request->user()
+            ]);
         });
+
+        Route::resource('/chat', ChatController::class)->except(['create']);
+        Route::post('/chat/send-chat', [ChatController::class, 'sendChat'])->name('chat.sendChat');
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     });
 
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-});
-
-Route::get('/sockets/serve', function () {
-    \Illuminate\Support\Facades\Artisan::call('websockets:serve');
-    return response()->json([
-        'message' => 'Starting the WebSocket server on port 6001...'
-    ]);
 });
