@@ -5,7 +5,8 @@ import { useAuth } from "@/composables/authComposable";
 import { useChat } from "@/composables/chatComposable";
 
 const { handleLogout } = useAuth();
-const { handleSendChat, chatStore, websocketStore, scrollIntoView } = useChat();
+const { handleSendChat, chatStore, websocketService, scrollIntoView } =
+  useChat();
 
 const ChatBox = defineAsyncComponent(() =>
   import("./components/ChatBox/index.vue")
@@ -16,17 +17,12 @@ const Sidebar = defineAsyncComponent(() =>
 const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
 
 onMounted(async () => {
-  websocketStore.connection();
+  websocketService.connect();
   await chatStore.getConversations();
-  websocketStore.subscribe(
+  websocketService.subscribe(
     `chat.${chatStore.chat?.chat_id}`,
     import.meta.env.VITE_PRESENCE_CHANNEL
   );
-  scrollIntoView(chatStore.chat?.messages);
-});
-
-onUpdated(() => {
-  scrollIntoView(chatStore.chat?.messages);
 });
 </script>
 
@@ -45,7 +41,11 @@ onUpdated(() => {
     <!--Chat.list.end-->
 
     <!--Chat.box.start-->
-    <ChatBox :onsubmit="handleSendChat" :chat="chatStore.chat" />
+    <ChatBox
+      :onsubmit="handleSendChat"
+      :chat="chatStore.chat"
+      :onscroll="() => scrollIntoView(chatStore.chat?.messages)"
+    />
     <!--Chat.box.end-->
 
     <!--Loading-->

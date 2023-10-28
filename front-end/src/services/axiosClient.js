@@ -14,7 +14,7 @@ axiosClient.interceptors.request.use(
     const token = localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN);
     if (token) {
       config.headers["Authorization"] = "Bearer " + token;
-      config.headers["X-Socket-ID"] = localStorage.getItem("socket_id") || "";
+      config.headers["X-Socket-ID"] = window.Echo?.socketId() || "";
     }
     // Do something before request is sent
     return config;

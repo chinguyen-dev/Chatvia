@@ -1,5 +1,5 @@
-import { useRouter } from "vue-router";
 import userService from "@/services/userService";
+import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/userStore";
 import { toast } from "vue3-toastify";
 
@@ -32,6 +32,7 @@ export const useAuth = () => {
       });
       await router.push("/");
     } catch (error) {
+      localStorage.clear();
       toast.error("Failed to login");
     }
   };

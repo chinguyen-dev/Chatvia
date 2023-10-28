@@ -1,13 +1,19 @@
-import { useChatBox } from "@/composables/chatBoxComposable";
 import chatService from "@/services/chatService";
+import websocketService from "@/services/websocket";
 import { useChatStore } from "@/stores/chatStore";
-import { useWebsocketStore } from "@/stores/websocketStore";
 
 export const useChat = () => {
   const chatStore = useChatStore();
-  const websocketStore = useWebsocketStore();
 
-  const { scrollIntoView } = useChatBox();
+  const scrollIntoView = (messages) => {
+    if (!messages) return;
+    const conversationElement = document.querySelector(
+      ".chat-conversation .content"
+    );
+    if (conversationElement) {
+      conversationElement.scrollTop = conversationElement.scrollHeight;
+    }
+  };
 
   const handleSendChat = async (payload) => {
     try {
@@ -22,18 +28,23 @@ export const useChat = () => {
   const handleOnSearch = (payload) => console.log(payload);
 
   const handleOnChat = (chat) => {
+    websocketService.subscribe(
+      `chat.${chat?.chat_id}`,
+      import.meta.env.VITE_PRESENCE_CHANNEL
+    );
+    localStorage.setItem(
+      import.meta.env.VITE_STORAGE_CHAT,
+      JSON.stringify(chat)
+    );
     chatStore.setState({
       chat,
     });
-    websocketStore.subscribe(
-      `chat.${chatStore.chat?.chat_id}`,
-      import.meta.env.VITE_PRESENCE_CHANNEL
-    );
+    scrollIntoView(chat.messages);
   };
 
   return {
     chatStore,
-    websocketStore,
+    websocketService,
     scrollIntoView,
     handleSendChat,
     handleOnSearch,

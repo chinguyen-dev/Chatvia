@@ -1,6 +1,6 @@
 <script setup>
 import { useChatBox } from "@/composables/chatBoxComposable";
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, onMounted, onUpdated } from "vue";
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 // import picker compopnent
 const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
@@ -16,13 +16,17 @@ const {
   convertName,
 } = useChatBox();
 
-const { onsubmit, chat } = defineProps({
+const { onsubmit, chat, onscroll } = defineProps({
   onsubmit: {
     type: Function,
     default: null,
   },
   chat: {
     type: Object,
+  },
+  onscroll: {
+    type: Function,
+    default: null,
   },
 });
 
@@ -36,6 +40,14 @@ const handleOnSubmit = (chat) => {
   onsubmit(payload);
   input.value = "";
 };
+
+onMounted(() => {
+  if (onscroll) onscroll();
+});
+
+onUpdated(() => {
+  if (onscroll) onscroll();
+});
 </script>
 
 <template>

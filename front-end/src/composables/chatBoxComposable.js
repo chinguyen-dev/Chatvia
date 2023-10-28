@@ -1,5 +1,4 @@
 import { ref } from "vue";
-import { useWebsocketStore } from "@/stores/websocketStore";
 
 export const useChatBox = () => {
   const authenticatedUser = ref(
@@ -7,17 +6,6 @@ export const useChatBox = () => {
   );
   const emoji = ref(false);
   const input = ref("");
-  const websocket = useWebsocketStore();
-
-  const scrollIntoView = (messages) => {
-    if (!messages) return;
-    const conversationElement = document.querySelector(
-      ".chat-conversation .content"
-    );
-    if (conversationElement) {
-      conversationElement.scrollTop = conversationElement.scrollHeight;
-    }
-  };
 
   const onSelectEmoji = (emoji) => (input.value = `${input.value}${emoji.i}`);
 
@@ -32,8 +20,6 @@ export const useChatBox = () => {
   return {
     emoji,
     input,
-    websocket,
-    scrollIntoView,
     authenticatedUser,
     onSelectEmoji,
     handleToggleEmoji,
