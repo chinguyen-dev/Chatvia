@@ -1,7 +1,8 @@
 <script setup>
 import { defineAsyncComponent } from "vue";
-const { user } = defineProps({
+const {} = defineProps({
   user: Object,
+  message: Object,
 });
 
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
@@ -12,9 +13,9 @@ const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
     <Avatar class="me-3" :user="user" />
     <div class="content">
       <h5 class="text-truncate mb-1">{{ user.name }}</h5>
-      <p class="text-truncate mb-0">typing...</p>
+      <p class="text-truncate mb-0">{{ message?.body || "Typing..." }}</p>
     </div>
-    <div class="time">04:56 PM</div>
+    <div class="time">{{ message?.created_at }}</div>
   </div>
 </template>
 

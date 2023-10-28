@@ -1,6 +1,6 @@
 <script setup>
 import { useChatBox } from "@/composables/chatBoxComposable";
-import { defineAsyncComponent, onMounted, onUpdated } from "vue";
+import { defineAsyncComponent } from "vue";
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 // import picker compopnent
 const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
@@ -8,7 +8,6 @@ const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
 import "vue3-emoji-picker/css";
 
 const {
-  scrollIntoView,
   authenticatedUser,
   handleToggleEmoji,
   emoji,
@@ -17,29 +16,26 @@ const {
   convertName,
 } = useChatBox();
 
-const { onsubmit, chat, autoScroll } = defineProps({
+const { onsubmit, chat } = defineProps({
   onsubmit: {
     type: Function,
     default: null,
   },
   chat: {
     type: Object,
-    default: null,
   },
 });
 
-const handleOnSubmit = () => {
-  if (!onsubmit) return;
-  onsubmit({
+const handleOnSubmit = (chat) => {
+  if (!onsubmit || !chat) return;
+  const payload = {
     conversation_id: chat.chat_id,
-    receiver_id: "",
+    receiver_id: chat.type == "people" ? chat.members[0].id : null,
     body: input.value,
-  });
+  };
+  onsubmit(payload);
   input.value = "";
 };
-
-onMounted(() => scrollIntoView(chat.messages));
-onUpdated(() => scrollIntoView(chat.messages));
 </script>
 
 <template>
@@ -49,7 +45,7 @@ onUpdated(() => scrollIntoView(chat.messages));
         <div class="d-flex align-items-center">
           <Avatar class="me-3" :user="chat?.members[0]" />
           <h5 class="flex-grow-1 mb-0 font-size-16">
-            {{ chat.name || convertName(chat.members[0]?.name) }}
+            {{ chat?.name || convertName(chat?.members[0]?.name) }}
           </h5>
         </div>
       </div>
@@ -60,7 +56,7 @@ onUpdated(() => scrollIntoView(chat.messages));
       <div class="content">
         <div
           :class="message.sender.id == authenticatedUser.id && 'right'"
-          v-for="message in chat.messages"
+          v-for="message in chat?.messages"
           :key="message.id"
           :id="`scrollTo-${message.id}`"
         >
@@ -112,7 +108,7 @@ onUpdated(() => scrollIntoView(chat.messages));
       </div>
     </div>
     <div class="footer p-4 border-top">
-      <form @submit.prevent="handleOnSubmit">
+      <form @submit.prevent="handleOnSubmit(chat)">
         <input type="text" placeholder="Type message" v-model="input" />
         <div class="footer__right">
           <div

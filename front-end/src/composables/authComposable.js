@@ -19,16 +19,16 @@ export const useAuth = () => {
 
   const handleLogin = async (payload) => {
     try {
-      const token = await userService.login(payload);
-      localStorage.setItem(import.meta.env.VITE_STORAGE_TOKEN, token);
+      const auth = await userService.login(payload);
+      localStorage.setItem(import.meta.env.VITE_STORAGE_TOKEN, auth.data);
       const user = await userService.getUser();
       localStorage.setItem(
         import.meta.env.VITE_STORAGE_USER,
-        JSON.stringify(user)
+        JSON.stringify(user.data)
       );
       userStore.setState({
-        user,
-        token,
+        user: user.data,
+        token: auth.data,
       });
       await router.push("/");
     } catch (error) {

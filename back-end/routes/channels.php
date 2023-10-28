@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Resources\MemberResource;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -13,8 +14,6 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('Chat.{id}', function ($user, $id) {
-    //Check User's Authorization to listen on the channel.
-    return true;
+Broadcast::channel('chat.{id}', function ($user, $id) {
+    if ($user->canJoinRoom($id) && auth()->check())  return $user;
 });
-

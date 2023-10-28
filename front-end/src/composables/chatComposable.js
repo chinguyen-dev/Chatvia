@@ -1,48 +1,42 @@
+import { useChatBox } from "@/composables/chatBoxComposable";
 import chatService from "@/services/chatService";
 import { useChatStore } from "@/stores/chatStore";
-import { useUserStore } from "@/stores/userStore";
 import { useWebsocketStore } from "@/stores/websocketStore";
-import { onMounted, ref } from "vue";
 
 export const useChat = () => {
-  const loading = ref(false);
   const chatStore = useChatStore();
-  const userStore = useUserStore();
   const websocketStore = useWebsocketStore();
 
-  const handleSendChat = (payload) => {
-    console.log(payload);
+  const { scrollIntoView } = useChatBox();
+
+  const handleSendChat = async (payload) => {
+    try {
+      const res = await chatService.sendMessage(payload);
+      const chat = chatStore.chat;
+      chat.messages.push(res.data);
+    } catch (error) {
+      console.log("error sending message");
+    }
   };
 
   const handleOnSearch = (payload) => console.log(payload);
 
-  const setRecentChat = (chat) => {
-    localStorage.setItem(
-      import.meta.env.VITE_STORAGE_CHAT,
-      JSON.stringify(chat)
-    );
+  const handleOnChat = (chat) => {
     chatStore.setState({
       chat,
     });
+    websocketStore.subscribe(
+      `chat.${chatStore.chat?.chat_id}`,
+      import.meta.env.VITE_PRESENCE_CHANNEL
+    );
   };
 
-  onMounted(async () => {
-    websocketStore.connection();
-    loading.value = true;
-    const data = await chatService.getConversations();
-    const chatList = data.map((chat, index) => ({
-      ...chat,
-      members: chat.members.filter((member) => member.id != userStore.user.id),
-    }));
-    chatStore.setState({ chatList });
-    loading.value = false;
-  });
-
   return {
-    loading,
     chatStore,
+    websocketStore,
+    scrollIntoView,
     handleSendChat,
     handleOnSearch,
-    setRecentChat,
+    handleOnChat,
   };
 };

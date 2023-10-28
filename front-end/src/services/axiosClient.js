@@ -14,6 +14,7 @@ axiosClient.interceptors.request.use(
     const token = localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN);
     if (token) {
       config.headers["Authorization"] = "Bearer " + token;
+      config.headers["X-Socket-ID"] = localStorage.getItem("socket_id") || "";
     }
     // Do something before request is sent
     return config;
@@ -29,7 +30,7 @@ axiosClient.interceptors.response.use(
   function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
-    return response.data.data;
+    return response.data;
   },
   function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger

@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Events\SendMessage;
+use App\Exceptions\NotFoundException;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Participant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpParser\Node\Stmt\TryCatch;
 
 class ChatService
 {
@@ -69,6 +72,19 @@ class ChatService
             'conversation_id' => (int) $attributes['conversation_id'],
             'content' => $attributes['body'],
         ]);
-        dd($message);
+        broadcast(new SendMessage(auth()->user(), $message))->toOthers();
+        return $message;
+    }
+
+    public function getConversationById(int $id)
+    {
+        try {
+            $conversation = Conversation::find($id);
+            if (!$conversation) throw new NotFoundException('Conversation not found');
+            return $conversation;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('message: ' . $e->getMessage() . ' Line: ' . $e->getLine());
+        }
     }
 }

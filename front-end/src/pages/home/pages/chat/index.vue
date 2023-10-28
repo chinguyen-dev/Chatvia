@@ -2,7 +2,7 @@
 import { useChat } from "@/composables/chatComposable";
 import { defineAsyncComponent } from "vue";
 
-const { handleOnSearch, setRecentChat, chatStore } = useChat();
+const { handleOnSearch, handleOnChat, chatStore } = useChat();
 
 const SearchBox = defineAsyncComponent(() =>
   import("../../components/SearchBox/index.vue")
@@ -38,9 +38,12 @@ const UserChat = defineAsyncComponent(() =>
             <li
               v-for="chat in chatStore.chatList"
               :key="chat.id"
-              @click="setRecentChat(chat)"
+              @click="handleOnChat(chat)"
             >
-              <UserChat :user="chat.members[0]" />
+              <UserChat
+                :user="chat.members[0]"
+                :message="chat.messages[chat.messages.length - 1]"
+              />
             </li>
           </ul>
         </div>

@@ -1,11 +1,11 @@
 <script setup>
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, onMounted, onUpdated } from "vue";
 
 import { useAuth } from "@/composables/authComposable";
 import { useChat } from "@/composables/chatComposable";
 
 const { handleLogout } = useAuth();
-const { handleSendChat, loading, chatStore } = useChat();
+const { handleSendChat, chatStore, websocketStore, scrollIntoView } = useChat();
 
 const ChatBox = defineAsyncComponent(() =>
   import("./components/ChatBox/index.vue")
@@ -14,6 +14,20 @@ const Sidebar = defineAsyncComponent(() =>
   import("./components/Sidebar/index.vue")
 );
 const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
+
+onMounted(async () => {
+  websocketStore.connection();
+  await chatStore.getConversations();
+  websocketStore.subscribe(
+    `chat.${chatStore.chat?.chat_id}`,
+    import.meta.env.VITE_PRESENCE_CHANNEL
+  );
+  scrollIntoView(chatStore.chat?.messages);
+});
+
+onUpdated(() => {
+  scrollIntoView(chatStore.chat?.messages);
+});
 </script>
 
 <template>
@@ -31,10 +45,11 @@ const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
     <!--Chat.list.end-->
 
     <!--Chat.box.start-->
-    <ChatBox :onsubmit="handleSendChat" :chat="chatStore.recentChat" />
+    <ChatBox :onsubmit="handleSendChat" :chat="chatStore.chat" />
     <!--Chat.box.end-->
 
-    <Loading v-if="loading" />
+    <!--Loading-->
+    <Loading v-if="chatStore.isLoading" />
   </div>
 </template>
 
