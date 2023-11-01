@@ -1,9 +1,14 @@
 <script setup>
 import { defineAsyncComponent } from "vue";
 import { useUserStore } from "@/stores/userStore";
+import { useChatStore } from "@/stores/ChatStore";
 
 const userStore = useUserStore();
+const chatStore = useChatStore();
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
+const Badge = defineAsyncComponent(() =>
+  import("@/components/Badge/index.vue")
+);
 
 const { onsubmit } = defineProps({
   onsubmit: {
@@ -37,9 +42,10 @@ const handleOnSubmit = () => {
           </router-link>
         </li>
         <li>
-          <router-link to="/chat"
-            ><i class="ri-message-3-line"></i
-          ></router-link>
+          <router-link to="/chat">
+            <i class="ri-message-3-line"> </i>
+            <Badge :value="chatStore.countAllUnreadMessages" :class="{}" />
+          </router-link>
         </li>
         <li>
           <router-link to="/groups"><i class="ri-group-line"></i></router-link>

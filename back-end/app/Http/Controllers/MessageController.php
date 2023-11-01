@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotifyReceiver;
+use App\Events\SendMessage;
+use App\Exceptions\NotFoundException;
+use App\Http\Resources\MessageResource;
+use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -25,9 +31,17 @@ class MessageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): MessageResource
     {
-        //
+        $receiver = User::find((int) $request->input('receiver_id'));
+        if (!$receiver) throw new NotFoundException('Receiver not found');
+
+        $message = Message::create(
+            array_merge($request->all(), ['sender_id' => auth()->id(),])
+        );
+        broadcast(new SendMessage(auth()->user(), $message))->toOthers();
+        broadcast(new NotifyReceiver($receiver, $message))->toOthers();
+        return new MessageResource($message);
     }
 
     /**
@@ -51,7 +65,7 @@ class MessageController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        dd(auth()->user());
     }
 
     /**

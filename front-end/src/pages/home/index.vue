@@ -1,12 +1,13 @@
 <script setup>
-import { defineAsyncComponent, onMounted, onUpdated } from "vue";
+import { defineAsyncComponent, onMounted } from "vue";
 
 import { useAuth } from "@/composables/authComposable";
 import { useChat } from "@/composables/chatComposable";
+import { useEvent } from "@/composables/eventsComposable";
 
 const { handleLogout } = useAuth();
-const { handleSendChat, chatStore, websocketService, scrollIntoView } =
-  useChat();
+const { scrollHeight } = useEvent();
+const { handleSendChat, chatStore, websocketService } = useChat();
 
 const ChatBox = defineAsyncComponent(() =>
   import("./components/ChatBox/index.vue")
@@ -19,10 +20,7 @@ const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
 onMounted(async () => {
   websocketService.connect();
   await chatStore.getConversations();
-  websocketService.subscribe(
-    `chat.${chatStore.chat?.chat_id}`,
-    import.meta.env.VITE_PRESENCE_CHANNEL
-  );
+  websocketService.subscribe("chat", import.meta.env.VITE_PRIVATE_CHANNEL);
 });
 </script>
 
@@ -44,7 +42,7 @@ onMounted(async () => {
     <ChatBox
       :onsubmit="handleSendChat"
       :chat="chatStore.chat"
-      :onscroll="() => scrollIntoView(chatStore.chat?.messages)"
+      :onscroll="() => scrollHeight('.chat-conversation .content')"
     />
     <!--Chat.box.end-->
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -28,7 +29,7 @@ Route::prefix('/v1')->group(function () {
         });
 
         Route::resource('/chat', ChatController::class)->except(['create']);
-        Route::post('/chat/send-chat', [ChatController::class, 'sendChat'])->name('chat.sendChat');
+        Route::resource('/message', MessageController::class)->only(['store', 'update']);
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     });
 

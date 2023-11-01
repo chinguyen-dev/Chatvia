@@ -20,6 +20,7 @@ class MessageResource extends JsonResource
             'sender' => new MemberResource(User::find($this->sender_id)),
             'receiver' => new MemberResource(User::find($this->receiver_id)),
             'body' => $this->content,
+            'unread' => !!$this->seen,
             'created_at' => $this->created_at->format('g:i A'),
         ];
     }

@@ -2,7 +2,13 @@
     display: flex;
     align-items: flex-start;
     padding: 15px 20px;
+    border-top: 1px solid #f5f7fb;
     cursor: pointer;
+    transition: all 0.4s ease;
+
+    &:hover {
+        background-color: $color-hover;
+    }
 }
 .content {
     flex: 1;
@@ -17,4 +23,11 @@ h5 {
 }
 .time {
     font-size: 11px;
+}
+
+.unread {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 0;
 }

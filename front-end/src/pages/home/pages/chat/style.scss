@@ -29,3 +29,11 @@ h5 {
         cursor: pointer;
     }
 }
+
+.chat-user-list {
+    & li.active {
+        .chat-user {
+            background-color: $color-hover;
+        }
+    }
+}

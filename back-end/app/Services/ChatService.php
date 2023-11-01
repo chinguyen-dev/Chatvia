@@ -64,17 +64,7 @@ class ChatService
         }
     }
 
-    public function sendMessage(array $attributes)
-    {
-        $message = Message::create([
-            'sender_id' => auth()->id(),
-            'receiver_id' => (int) $attributes['receiver_id'],
-            'conversation_id' => (int) $attributes['conversation_id'],
-            'content' => $attributes['body'],
-        ]);
-        broadcast(new SendMessage(auth()->user(), $message))->toOthers();
-        return $message;
-    }
+
 
     public function getConversationById(int $id)
     {

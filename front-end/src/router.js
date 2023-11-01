@@ -2,11 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 const routes = [
   {
     path: "/",
-    beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN);
-      if (token) next();
-      next({ name: "user-auth" });
-    },
     component: () => import("./pages/home/index.vue"),
     alias: ["/chat", "/home"],
     children: [
@@ -18,11 +13,12 @@ const routes = [
   },
   {
     path: "/login",
-    name: "user-auth",
+    name: "Login",
     component: () => import("./pages/login/index.vue"),
   },
   {
     path: "/register",
+    name: "Register",
     component: () => import("./pages/register/index.vue"),
   },
   {
@@ -36,6 +32,14 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   linkExactActiveClass: "active",
+});
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN);
+  if (to.name !== "Login" && !token) {
+    next({ name: "Login" });
+  }
+  next();
 });
 
 export default router;

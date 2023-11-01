@@ -5,11 +5,21 @@ defineProps({
     type: Boolean,
     default: true,
   },
+  size: {
+    type: Number,
+    default: 35,
+  },
 });
 </script>
 
 <template>
-  <div class="avatar">
+  <div
+    class="avatar"
+    :style="{
+      width: `${size}px`,
+      height: `${size}px`,
+    }"
+  >
     <img
       v-if="user?.avatar"
       class="rounded-circle"

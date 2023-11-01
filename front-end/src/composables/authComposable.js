@@ -1,49 +1,28 @@
-import userService from "@/services/userService";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/userStore";
-import { toast } from "vue3-toastify";
+import { useChatStore } from "@/stores/chatStore";
 
 export const useAuth = () => {
   const router = useRouter();
   const userStore = useUserStore();
+  const chatStore = useChatStore();
 
   const handleLogout = async () => {
-    try {
-      await userService.logout();
-      localStorage.clear();
-      await router.push("/login");
-    } catch (error) {
-      toast.error("Logout failed");
-    }
+    await userStore.logout();
+    localStorage.clear();
+    userStore.$reset();
+    chatStore.$reset();
+    await router.push("/login");
   };
 
   const handleLogin = async (payload) => {
-    try {
-      const auth = await userService.login(payload);
-      localStorage.setItem(import.meta.env.VITE_STORAGE_TOKEN, auth.data);
-      const user = await userService.getUser();
-      localStorage.setItem(
-        import.meta.env.VITE_STORAGE_USER,
-        JSON.stringify(user.data)
-      );
-      userStore.setState({
-        user: user.data,
-        token: auth.data,
-      });
-      await router.push("/");
-    } catch (error) {
-      localStorage.clear();
-      toast.error("Failed to login");
-    }
+    await userStore.login(payload);
+    await router.push("/");
   };
 
   const handleRegister = async (payload) => {
-    try {
-      await userService.register(payload);
-      await router.push("/login");
-    } catch (error) {
-      toast.error("Error registering");
-    }
+    await userStore.register(payload);
+    await router.push("/login");
   };
 
   return { handleLogout, handleLogin, handleRegister };

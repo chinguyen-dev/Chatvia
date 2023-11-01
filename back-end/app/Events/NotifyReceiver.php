@@ -2,52 +2,50 @@
 
 namespace App\Events;
 
-use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendMessage implements ShouldBroadcast
+class NotifyReceiver implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public Message $message;
-    public User $user;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, Message $message)
+    public function __construct(public User $receiver, public Message $message)
     {
-        $this->message = $message;
-        $this->user = $user;
+        //
     }
 
-    public function broadcastOn()
+    /**
+     * Get the channels the event should broadcast on.
+     *
+     * @return array<int, \Illuminate\Broadcasting\Channel>
+     */
+    public function broadcastOn(): array
     {
-        return new PrivateChannel('chat');
+        return [
+            new PrivateChannel('user.' . $this->receiver->id),
+        ];
     }
 
     public function broadcastAs(): string
     {
-        return 'SEND-CHAT';
+        return 'NOTIFY-RECEIVER';
     }
-
 
     public function broadcastWith(): array
     {
         return [
             'conversation_id' => $this->message->conversation_id,
-            'message' => new MessageResource($this->message)
+            'message' => $this->message
         ];
-    }
-
-    public function broadcastWhen(): bool
-    {
-        return $this->user->canJoinRoom($this->message->conversation_id);
     }
 }

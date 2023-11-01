@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessageResource;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
 
@@ -41,10 +40,6 @@ class ChatController extends Controller
         return new ChatResource($conversation);
     }
 
-    public function sendChat(Request $request)
-    {
-        return new MessageResource($this->chatService->sendMessage($request->all()));
-    }
 
     /**
      * Display the specified resource.

@@ -1,9 +1,6 @@
 import { ref } from "vue";
 
-export const useChatBox = () => {
-  const authenticatedUser = ref(
-    JSON.parse(localStorage.getItem(import.meta.env.VITE_STORAGE_USER))
-  );
+export const useEmoji = () => {
   const emoji = ref(false);
   const input = ref("");
 
@@ -20,7 +17,6 @@ export const useChatBox = () => {
   return {
     emoji,
     input,
-    authenticatedUser,
     onSelectEmoji,
     handleToggleEmoji,
     convertName,

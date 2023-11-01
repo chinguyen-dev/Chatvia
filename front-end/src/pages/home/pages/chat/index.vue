@@ -23,7 +23,7 @@ const UserChat = defineAsyncComponent(() =>
       <SearchBox
         type="text"
         :on-submit="handleOnSearch"
-        placeholder="Search messages or users"
+        placeholder="Tìm kiếm"
       />
       <!-- User Carousel -->
       <div class="px-1 pb-4 mt-3">
@@ -36,13 +36,16 @@ const UserChat = defineAsyncComponent(() =>
         <div class="chat-list">
           <ul class="chat-user-list">
             <li
-              v-for="chat in chatStore.chatList"
+              v-for="chat in chatStore.getChats"
               :key="chat.id"
               @click="handleOnChat(chat)"
+              :class="{ active: chat.active }"
             >
               <UserChat
                 :user="chat.members[0]"
                 :message="chat.messages[chat.messages.length - 1]"
+                :size-avatar="40"
+                :unread="chat.unread"
               />
             </li>
           </ul>

@@ -1,20 +1,18 @@
 <script setup>
-import { useChatBox } from "@/composables/chatBoxComposable";
-import { defineAsyncComponent, onMounted, onUpdated } from "vue";
+import { useEmoji } from "@/composables/emojiComposable";
+import { defineAsyncComponent, onMounted, onUpdated, ref } from "vue";
+import { useUserStore } from "@/stores/userStore";
+
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 // import picker compopnent
 const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
 // import css
 import "vue3-emoji-picker/css";
 
-const {
-  authenticatedUser,
-  handleToggleEmoji,
-  emoji,
-  input,
-  onSelectEmoji,
-  convertName,
-} = useChatBox();
+const { handleToggleEmoji, emoji, input, onSelectEmoji, convertName } =
+  useEmoji();
+
+const userStore = useUserStore();
 
 const { onsubmit, chat, onscroll } = defineProps({
   onsubmit: {
@@ -35,19 +33,15 @@ const handleOnSubmit = (chat) => {
   const payload = {
     conversation_id: chat.chat_id,
     receiver_id: chat.type == "people" ? chat.members[0].id : null,
-    body: input.value,
+    content: input.value,
   };
   onsubmit(payload);
   input.value = "";
 };
 
-onMounted(() => {
-  if (onscroll) onscroll();
-});
+onMounted(() => onscroll && onscroll());
 
-onUpdated(() => {
-  if (onscroll) onscroll();
-});
+onUpdated(() => onscroll && onscroll());
 </script>
 
 <template>
@@ -55,7 +49,7 @@ onUpdated(() => {
     <div class="header p-4 border-bottom">
       <div class="col-md-4">
         <div class="d-flex align-items-center">
-          <Avatar class="me-3" :user="chat?.members[0]" />
+          <Avatar class="me-3" :user="chat?.members[0]" :size="40" />
           <h5 class="flex-grow-1 mb-0 font-size-16">
             {{ chat?.name || convertName(chat?.members[0]?.name) }}
           </h5>
@@ -67,24 +61,23 @@ onUpdated(() => {
     <div class="chat-conversation">
       <div class="content">
         <div
-          :class="message.sender.id == authenticatedUser.id && 'right'"
+          :class="message.sender.id == userStore.user.id && 'right'"
           v-for="message in chat?.messages"
           :key="message.id"
-          :id="`scrollTo-${message.id}`"
         >
           <div class="message">
             <Avatar
               class="me-3"
               :user="
-                message.sender.id == authenticatedUser.id
-                  ? authenticatedUser
+                message.sender.id == userStore.user.id
+                  ? userStore.user
                   : message.sender
               "
             />
             <div class="box flex-grow-1">
               <div class="text-wrap">
                 <div class="text-wrap__content">
-                  <span>{{ message.body }}!</span>
+                  <span>{{ message.body }}</span>
                   <p><i class="ri-time-line"></i> {{ message.created_at }}</p>
                 </div>
                 <div class="dropdown">
@@ -109,8 +102,8 @@ onUpdated(() => {
               </div>
               <div class="name">
                 {{
-                  message.sender.id == authenticatedUser.id
-                    ? convertName(authenticatedUser.name)
+                  message.sender.id == userStore.user.id
+                    ? convertName(userStore.user.name)
                     : convertName(message.sender.name)
                 }}
               </div>

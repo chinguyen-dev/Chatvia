@@ -28,11 +28,12 @@
         flex-wrap: wrap;
         justify-content: center;
 
-        & > li {
+        & li {
             margin: 7px 0;
 
             & a {
                 display: block;
+                position: relative;
                 text-align: center;
                 font-size: 24px;
                 color: #878a92;
@@ -45,6 +46,11 @@
 
                 &.active {
                     color: #7269ef;
+                }
+                span {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
                 }
             }
         }

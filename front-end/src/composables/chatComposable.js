@@ -5,47 +5,30 @@ import { useChatStore } from "@/stores/chatStore";
 export const useChat = () => {
   const chatStore = useChatStore();
 
-  const scrollIntoView = (messages) => {
-    if (!messages) return;
-    const conversationElement = document.querySelector(
-      ".chat-conversation .content"
-    );
-    if (conversationElement) {
-      conversationElement.scrollTop = conversationElement.scrollHeight;
-    }
-  };
-
   const handleSendChat = async (payload) => {
     try {
       const res = await chatService.sendMessage(payload);
-      const chat = chatStore.chat;
-      chat.messages.push(res.data);
+      chatStore.chat.messages.push(res.data);
     } catch (error) {
       console.log("error sending message");
     }
   };
-
   const handleOnSearch = (payload) => console.log(payload);
 
-  const handleOnChat = (chat) => {
-    websocketService.subscribe(
-      `chat.${chat?.chat_id}`,
-      import.meta.env.VITE_PRESENCE_CHANNEL
-    );
+  const handleOnChat = async (chat) => {
+    const res = await chatService.getConversationById(chat.chat_id);
     localStorage.setItem(
       import.meta.env.VITE_STORAGE_CHAT,
-      JSON.stringify(chat)
+      JSON.stringify(res.data)
     );
     chatStore.setState({
-      chat,
+      chat: res.data,
     });
-    scrollIntoView(chat.messages);
   };
 
   return {
     chatStore,
     websocketService,
-    scrollIntoView,
     handleSendChat,
     handleOnSearch,
     handleOnChat,

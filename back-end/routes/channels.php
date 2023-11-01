@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Resources\MemberResource;
+use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -14,6 +15,15 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('chat.{id}', function ($user, $id) {
-    if ($user->canJoinRoom($id) && auth()->check())  return $user;
+Broadcast::channel('conversation.{id}', function ($user, $id) {
+    return $user->canJoinRoom($id) && auth()->check();
+});
+
+Broadcast::channel('chat', function ($user) {
+    return auth()->check();
+});
+
+Broadcast::channel('user.{id}', function ($user, $id) {
+    $receiver = User::find($id);
+    return $receiver ? true : false;
 });

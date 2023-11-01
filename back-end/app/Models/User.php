@@ -58,7 +58,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Conversation::class, 'participants', 'user_id', 'conversation_id');
     }
 
-    public function canJoinRoom($roomId)
+    public function canJoinRoom(int $roomId): bool
     {
         return $this->conversations->contains('id', $roomId);
     }
