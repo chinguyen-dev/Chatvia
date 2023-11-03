@@ -19,9 +19,7 @@ class ChatResource extends JsonResource
             'name' => $this->name,
             'creator_id' => $this->creator_id,
             'type' => $this->type,
-            'members' => MemberResource::collection($this->members->filter(function ($member) {
-                return $member->id != auth()->id();
-            })),
+            'members' => MemberResource::collection($this->members),
             'messages' => MessageResource::collection($this->messages)
         ];
     }

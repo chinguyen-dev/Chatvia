@@ -1,10 +1,7 @@
 import axiosClient from "./axiosClient";
-import { useChatStore } from "@/stores/chatStore";
 import { useUserStore } from "@/stores/userStore";
 import Echo from "laravel-echo";
-import Pusher from "pusher-js";
 
-window.Pusher = Pusher;
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 const websocketService = {
@@ -36,35 +33,15 @@ const websocketService = {
       },
     });
   },
-  subscribe(channelName, type) {
-    const chatStore = useChatStore();
-    switch (type.toLocaleLowerCase()) {
-      case import.meta.env.VITE_PRIVATE_CHANNEL:
-        window.Echo.private(channelName).listen(".SEND-CHAT", (e) => {
-          chatStore.chatList.map((chat) => {
-            if (chat.chat_id == e.conversation_id) {
-              chat.messages.push(e.message);
-            }
-          });
-        });
-        break;
-      case import.meta.env.VITE_PRESENCE_CHANNEL:
-        break;
-      case import.meta.env.VITE_PUBLIC_CHANNEL:
-        break;
-      default:
-        break;
-    }
-    chatStore.channelName = channelName;
-  },
-  unsubcribe(channelName, type, event) {
-    const chatStore = useChatStore();
-    if (!chatStore.channelName || chatStore.channelName === channelName) return;
-    if (type == import.meta.env.VITE_PRESENCE_CHANNEL) {
-      window.Echo.leave(channelName);
-    } else if (type == import.meta.env.VITE_PRIVATE_CHANNEL) {
-      window.Echo.private(channelName).stopListening(event);
-    }
+  subscribe(type = import.meta.env.VITE_PRIVATE_CHANNEL) {
+    const userStore = useUserStore();
+    return new Promise(function (resolve, reject) {
+      let channel;
+      if (type === import.meta.env.VITE_PRIVATE_CHANNEL) {
+        channel = window.Echo.private(`user.${userStore.user?.id}`);
+      }
+      channel ? resolve(channel) : reject(window.Echo);
+    });
   },
 };
 

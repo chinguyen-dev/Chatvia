@@ -10,8 +10,8 @@ const chatService = {
   sendMessage: (payload) => {
     return axiosClient.post(`${baseURL}/api/v1/message`, payload);
   },
-  updateReadMessage: () => {
-    return axiosClient.put(`${baseURL}/api/v1/message`);
+  updateReadMessage: (payload) => {
+    return axiosClient.put(`${baseURL}/api/v1/message/seen`, payload);
   },
 };
 

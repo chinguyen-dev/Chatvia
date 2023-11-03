@@ -18,9 +18,21 @@ const Sidebar = defineAsyncComponent(() =>
 const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
 
 onMounted(async () => {
-  websocketService.connect();
+  await websocketService.connect();
   await chatStore.getConversations();
-  websocketService.subscribe("chat", import.meta.env.VITE_PRIVATE_CHANNEL);
+  websocketService
+    .subscribe()
+    .then(function (channel) {
+      channel.listen(".NEW-MESSAGE", ({ conversation_id, message }) => {
+        chatStore.chatList.map(
+          (chat) =>
+            chat.chat_id === conversation_id && chat.messages.push(message)
+        );
+      });
+    })
+    .catch(function (echo) {
+      console.log(echo);
+    });
 });
 </script>
 

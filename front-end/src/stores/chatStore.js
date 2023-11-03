@@ -39,7 +39,13 @@ export const useChatStore = defineStore("chat", {
   actions: {
     setState({ chatList, chat, isLoading, channelName }) {
       if (chatList) this.chatList = chatList;
-      if (chat) this.chat = chat;
+      if (chat) {
+        localStorage.setItem(
+          import.meta.env.VITE_STORAGE_CHAT,
+          JSON.stringify(chat)
+        );
+        this.chat = chat;
+      }
       if (channelName) this.channelName = channelName;
       this.isLoading = isLoading;
     },
@@ -49,7 +55,7 @@ export const useChatStore = defineStore("chat", {
         const res = await chatService.getConversations();
         this.chatList = res.data;
         if (!this.chat) {
-          this.chat = res.data && res.data[0];
+          this.chat = res.data.length > 0 && res.data[0];
         } else {
           this.chat = res.data.find(
             (chat) => chat.chat_id === this.chat.chat_id
@@ -62,6 +68,21 @@ export const useChatStore = defineStore("chat", {
         this.isLoading = false;
       } catch (error) {
         console.log("server error");
+      }
+    },
+    async readMessage(payload) {
+      try {
+        const res = await chatService.updateReadMessage(payload);
+        const { chat_id } = res.data;
+        this.setState({
+          chatList: this.chatList.map((chat) => {
+            if (chat.chat_id === chat_id) chat = res.data;
+            return chat;
+          }),
+          chat: res.data,
+        });
+      } catch (error) {
+        console.log("Error updating");
       }
     },
   },

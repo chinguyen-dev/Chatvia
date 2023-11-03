@@ -29,7 +29,9 @@ Route::prefix('/v1')->group(function () {
         });
 
         Route::resource('/chat', ChatController::class)->except(['create']);
-        Route::resource('/message', MessageController::class)->only(['store', 'update']);
+        Route::resource('/message', MessageController::class)->only(['store']);
+        Route::put('/message/seen', [MessageController::class, 'updateSeen']);
+
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     });
 

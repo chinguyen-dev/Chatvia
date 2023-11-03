@@ -2,7 +2,7 @@
 import { useChat } from "@/composables/chatComposable";
 import { defineAsyncComponent } from "vue";
 
-const { handleOnSearch, handleOnChat, chatStore } = useChat();
+const { handleOnSearch, handleOnChat, chatStore, userStore } = useChat();
 
 const SearchBox = defineAsyncComponent(() =>
   import("../../components/SearchBox/index.vue")
@@ -42,7 +42,13 @@ const UserChat = defineAsyncComponent(() =>
               :class="{ active: chat.active }"
             >
               <UserChat
-                :user="chat.members[0]"
+                :user="
+                  chat.type == 'people'
+                    ? chat.members.find(
+                        (member) => member.id !== userStore.user.id
+                      )
+                    : null
+                "
                 :message="chat.messages[chat.messages.length - 1]"
                 :size-avatar="40"
                 :unread="chat.unread"

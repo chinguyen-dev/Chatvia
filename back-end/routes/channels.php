@@ -15,12 +15,9 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
-Broadcast::channel('conversation.{id}', function ($user, $id) {
-    return $user->canJoinRoom($id) && auth()->check();
-});
 
-Broadcast::channel('chat', function ($user) {
-    return auth()->check();
+Broadcast::channel('room.{roomId}', function ($user, $roomId) {
+    return $user->canJoinRoom($roomId) && auth()->check();
 });
 
 Broadcast::channel('user.{id}', function ($user, $id) {

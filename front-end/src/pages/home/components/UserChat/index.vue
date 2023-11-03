@@ -1,7 +1,15 @@
 <script setup>
 import { defineAsyncComponent } from "vue";
 defineProps({
-  user: Object,
+  user: {
+    type: Object,
+    default(rawProps) {
+      return {
+        name: "",
+        avatar: "",
+      };
+    },
+  },
   message: Object,
   sizeAvatar: {
     type: Number,
@@ -29,7 +37,7 @@ const Badge = defineAsyncComponent(() =>
           'text-primary-unread': unread > 0,
         }"
       >
-        {{ user.name }}
+        {{ user?.name }}
       </h5>
       <p
         :class="{

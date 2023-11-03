@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\NotifyReceiver;
-use App\Events\SendMessage;
+use App\Events\NewMessage;
 use App\Exceptions\NotFoundException;
+use App\Http\Resources\ChatResource;
 use App\Http\Resources\MessageResource;
+use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -39,8 +42,7 @@ class MessageController extends Controller
         $message = Message::create(
             array_merge($request->all(), ['sender_id' => auth()->id(),])
         );
-        broadcast(new SendMessage(auth()->user(), $message))->toOthers();
-        broadcast(new NotifyReceiver($receiver, $message))->toOthers();
+        broadcast(new NewMessage($receiver, $message))->toOthers();
         return new MessageResource($message);
     }
 
@@ -65,7 +67,23 @@ class MessageController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        dd(auth()->user());
+    }
+
+    public function updateSeen(Request $request)
+    {
+        $conversation = Conversation::find($request->input('conversation_id'));
+        if (!$conversation) throw new NotFoundException('Conversation not found.');
+        try {
+            DB::beginTransaction();
+            Message::where('conversation_id', $request->input('conversation_id'))
+                ->where('sender_id', $request->input('sender_id'))
+                ->update($request->all());
+            DB::commit();
+            return new ChatResource($conversation);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('message: ' . $e->getMessage() . ' Line: ' . $e->getLine());
+        }
     }
 
     /**

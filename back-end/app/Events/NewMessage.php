@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
@@ -12,7 +13,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NotifyReceiver implements ShouldBroadcast
+class NewMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -38,14 +39,14 @@ class NotifyReceiver implements ShouldBroadcast
 
     public function broadcastAs(): string
     {
-        return 'NOTIFY-RECEIVER';
+        return 'NEW-MESSAGE';
     }
 
     public function broadcastWith(): array
     {
         return [
             'conversation_id' => $this->message->conversation_id,
-            'message' => $this->message
+            'message' => new MessageResource($this->message)
         ];
     }
 }
