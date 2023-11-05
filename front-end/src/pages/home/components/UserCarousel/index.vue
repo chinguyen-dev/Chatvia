@@ -1,7 +1,7 @@
 <script setup>
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
 import { computed, defineAsyncComponent } from "vue";
+import "swiper/css";
 
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 
@@ -23,7 +23,7 @@ const usersMap = computed(() => {
 </script>
 
 <template>
-  <Swiper :slides-per-view="4">
+  <Swiper :slides-per-view="4" class="px-[5px!important]">
     <SwiperSlide v-for="user in usersMap" :key="user.id">
       <div class="item">
         <a href="" class="item__link">

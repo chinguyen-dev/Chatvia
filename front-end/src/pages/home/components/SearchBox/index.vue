@@ -21,7 +21,7 @@ const handleOnSearch = () => {
 </script>
 
 <template>
-  <div class="search-box">
+  <div class="search-box mb-4">
     <button type="button" class="text-muted" @click="handleOnSearch">
       <i class="ri-search-line"></i>
     </button>

@@ -14,7 +14,7 @@ defineProps({
 
 <template>
   <div
-    class="avatar"
+    class="relative h-full mx-auto"
     :style="{
       width: `${size}px`,
       height: `${size}px`,
@@ -22,15 +22,19 @@ defineProps({
   >
     <img
       v-if="user?.avatar"
-      class="rounded-circle"
       :src="user?.avatar"
       alt="avatar"
+      class="max-w-full h-auto rounded-full"
     />
-    <span v-else class="avatar__title rounded-circle text-primary">
+    <span
+      v-else
+      class="flex justify-center items-center h-full font-medium bg-[rgba(114, 105, 239, 0.25)] rounded-full text-primary"
+    >
       {{ user?.name?.charAt(0) }}
     </span>
-    <span v-if="hidden" class="status"></span>
+    <span
+      v-if="hidden"
+      class="absolute right-0 bottom-0 border-[2px] border-solid border-white rounded-[50%] bg-[#06d6a0] w-[10px] h-[10px]"
+    ></span>
   </div>
 </template>
-
-<style src="./style.scss" lang="scss" scoped />

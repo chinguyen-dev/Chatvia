@@ -37,13 +37,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="wrapper d-flex">
+  <div class="wrapper flex">
     <!--Sidebar.start-->
     <Sidebar :onsubmit="handleLogout" />
     <!--Sidebar.End-->
 
     <!--Chat.list.start-->
-    <div class="chat-leftsidebar me-1">
+    <div class="min-w-[380px] max-w-[380px] h-screen bg-[#f5f7fb] me-1">
       <div class="tab-content">
         <router-view />
       </div>
@@ -62,5 +62,3 @@ onMounted(async () => {
     <Loading v-if="chatStore.isLoading" />
   </div>
 </template>
-
-<style src="./style.scss" lang="scss" scoped />
