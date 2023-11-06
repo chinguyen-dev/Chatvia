@@ -1,38 +1,24 @@
+<script setup>
+import { ref } from "vue";
+
+const dots = ref(5);
+</script>
 <template>
-  <div class="wrapper">
-    <div class="loader">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
+  <div class="fixed top-0 right-0 left-0 bottom-0 bg-white z-[99999]">
+    <div
+      class="loader absolute top-1/2 left-[40%] ml-[10%] -translate-y-2/4 -translate-x-2/4"
+    >
+      <div
+        v-for="(dot, index) in dots"
+        :key="index"
+        class="dot inline-block w-6 h-6 bg-[#3ac] rounded-[100%]"
+      ></div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.wrapper {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background-color: #fff;
-  z-index: 99999;
-}
-.loader {
-  position: absolute;
-  top: 50%;
-  left: 40%;
-  margin-left: 10%;
-  transform: translate3d(-50%, -50%, 0);
-}
 .dot {
-  width: 24px;
-  height: 24px;
-  background: #3ac;
-  border-radius: 100%;
-  display: inline-block;
   animation: slide 1s infinite;
 }
 .dot:nth-child(1) {

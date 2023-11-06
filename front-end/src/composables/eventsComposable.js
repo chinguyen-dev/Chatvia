@@ -6,5 +6,19 @@ export const useEvent = () => {
     }
   };
 
-  return { scrollHeight };
+  const toggleEmoji = (state) => {
+    document.addEventListener("click", function (event) {
+      const targetElement = event.target;
+      const EmojiPicker = document.querySelector(".v3-emoji-picker");
+      if (
+        !targetElement.matches("#dropdownButton") &&
+        !targetElement.matches(".ri-emotion-happy-line") &&
+        !EmojiPicker.contains(targetElement)
+      ) {
+        state.value = false;
+      }
+    });
+  };
+
+  return { scrollHeight, toggleEmoji };
 };

@@ -82,7 +82,7 @@ onMounted(() => {
       <UserCarousel :users="users" />
     </div>
     <div class="px-2">
-      <h5 class="px-3 mb-3 text-[16px] font-semibold">Recent</h5>
+      <h5 class="px-4 mb-3 text-[16px] font-semibold">Recent</h5>
       <div class="relative group h-[calc(100vh_-_280px)]">
         <div id="chat-list" class="absolute p-0 m-0 top-0 bottom-0 w-full">
           <UserChat

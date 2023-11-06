@@ -3,7 +3,7 @@ import { defineAsyncComponent } from "vue";
 defineProps({
   user: {
     type: Object,
-    default(rawProps) {
+    default() {
       return {
         name: "",
         avatar: "",
@@ -27,36 +27,50 @@ const Badge = defineAsyncComponent(() =>
 </script>
 
 <template>
-  <div class="chat-user">
-    <Avatar class="me-3" :user="user" :size="sizeAvatar" />
-    <div class="content">
+  <div
+    class="hover:bg-[#e6ebf5] border-t-[1px] border-solid border-[#f5f7fb] flex items-start px-5 py-[15px] rounded-[5px] cursor-pointer transition-all duration-[0.4s] ease-[cubic-bezier(0.25,0.1,0.25,1.0)]"
+  >
+    <Avatar class="me-4" :user="user" :size="sizeAvatar" />
+    <div class="flex-grow">
       <h5
         :class="{
-          'text-truncate': true,
+          truncate: true,
+          'text-[15px]': true,
+          'text-[#495057]': true,
           'mb-0': true,
-          'text-primary-unread': unread > 0,
+          'font-semibold': unread > 0,
+          'font-medium': unread == 0,
+          'text-[#081c36]': unread > 0,
         }"
       >
         {{ user?.name }}
       </h5>
       <p
         :class="{
-          'text-truncate': true,
+          truncate: true,
+          'w-[220px]': true,
           'mb-0': true,
-          'text-secondary-read': unread == 0,
-          'text-primary-unread': unread > 0,
+          'text-sm': true,
+          'text-[#7589a3]': unread == 0,
+          'text-[#081c36]': unread > 0,
         }"
       >
         {{ message?.body || "Typing..." }}
       </p>
     </div>
-    <div class="">
-      <div class="time mb-2">{{ message?.created_at }}</div>
-      <div class="unread">
+    <div class="time">
+      <div class="text-[11px] mb-2 text-[#7a7f9a]">
+        {{ message?.created_at }}
+      </div>
+      <div class="flex justify-end w-full p-0">
         <Badge :value="unread" />
       </div>
     </div>
   </div>
 </template>
 
-<style src="./style.scss" lang="scss" scoped />
+<style lang="scss" scoped>
+.active {
+  background-color: $color-hover;
+}
+</style>
