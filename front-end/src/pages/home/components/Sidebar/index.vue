@@ -131,6 +131,7 @@ const handleOnSubmit = () => {
                 <menu-item>
                   <a
                     href="#"
+                    @click.prevent="handleOnSubmit"
                     class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
                   >
                     Đăng xuất

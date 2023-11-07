@@ -50,92 +50,98 @@ const handleOnSubmit = handleSubmit((credentials) => {
 </script>
 
 <template>
-  <div class="account-pages my-5 pt-sm-5">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-xl-5">
-          <div class="text-center mb-4">
-            <a href="/" class="auth-logo mb-5 d-block">
+  <div class="account-pages my-12 pt-4">
+    <div class="w-full max-w-[1140px] mx-auto px-3">
+      <div class="grid grid-cols-10">
+        <div class="col-start-4 col-span-4">
+          <div class="text-center mb-6">
+            <a href="/" class="auth-logo mb-10 block">
               <img
+                class="h-[30px] block mx-auto"
                 src="@/assets/images/logo-dark.37cbc9c5.png"
                 alt="logo"
-                height="30"
               />
             </a>
-            <h4>{{ name }}</h4>
-            <p class="text-muted mb-4">{{ title }}</p>
+            <h4 class="text-[#495057] font-semibold text-[21px] leading-6 mb-2">
+              {{ name }}
+            </h4>
+            <p class="text-muted mb-6">{{ title }}</p>
           </div>
-          <div class="card">
-            <div class="card-body p-4">
-              <div class="p-3">
+          <div
+            class="relative flex mb-6 flex-col min-w-0 bg-white bg-clip-border border-0 border-solid border-[#f5f7fb]"
+          >
+            <div class="p-6 min-h-[1px] flex-auto">
+              <div class="p-4">
                 <form @submit.prevent="handleOnSubmit">
                   <FormGroup
                     v-if="name === 'Sign up'"
                     label="Username"
-                    label-classes="fw-500"
+                    label-classes="mb-2 inline-block font-medium"
                     type="text"
                     placeholder="Enter username"
-                    :icon="['far', 'user']"
+                    input-classes="form-control px-4 py-2 rounded-lg bg-[#e6ebf540] text-sm font-normal"
                     :="username"
-                    input-classes="form-control bg-soft-light border-light"
-                  />
-                  <span
-                    v-if="name === 'Sign up'"
-                    class="error text-danger mb-2 d-block"
-                    >{{ errors.username }}</span
-                  >
-                  <FormGroup
-                    label="Email"
-                    label-classes="fw-500"
-                    type="email"
-                    placeholder="Enter your email"
-                    :icon="['far', 'envelope']"
-                    :="email"
-                    input-classes="form-control bg-soft-light border-light"
-                  />
-                  <span class="error text-danger mb-2 d-block">{{
-                    errors.email
-                  }}</span>
-                  <FormGroup
+                    :icon="['far', 'user']"
+                    :error="errors.username"
                     :class="{
                       'mb-2': !!errors.password,
                       'mb-4': !errors.password,
                     }"
+                  />
+                  <FormGroup
+                    label="Email"
+                    label-classes="mb-2 inline-block font-medium"
+                    type="email"
+                    placeholder="Enter your email"
+                    input-classes="form-control px-4 py-2 rounded-lg bg-[#e6ebf540] text-sm font-normal"
+                    :="email"
+                    :icon="['far', 'envelope']"
+                    :error="errors.email"
+                    :class="{
+                      'mb-2': !!errors.password,
+                      'mb-4': !errors.password,
+                    }"
+                  />
+                  <FormGroup
+                    class="mb-6"
                     label="Password"
-                    label-classes="fw-500"
+                    label-classes="mb-2 inline-block font-medium"
                     type="password"
                     placeholder="Enter your password"
-                    :icon="['far', 'eye']"
+                    input-classes="form-control px-4 py-2 rounded-lg bg-[#e6ebf540] text-sm font-normal"
                     :="password"
-                    input-classes="form-control bg-soft-light border-light"
+                    :modelValue="password.value"
+                    :icon="['far', 'eye']"
+                    :error="errors.password"
                     :isShow="toggleEye"
                     @toggle-eye="(data) => (toggleEye = data)"
                   />
-                  <span class="error text-danger mb-4 d-block">{{
-                    errors.password
-                  }}</span>
-                  <div>
-                    <button type="submit">
-                      {{ name }}
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    class="w-full hover:bg-[#5246eb] block border border-solid border-transparent rounded-md text-white px-3 py-2 bg-[#7269ef]"
+                  >
+                    {{ name }}
+                  </button>
                 </form>
               </div>
             </div>
           </div>
-          <div class="mt-5 text-center">
-            <p>
+          <div class="mt-12 text-center">
+            <p class="mt-0 mb-4">
               Don't have an account ?
               <router-link
                 :to="name == 'Sign in' ? '/register' : '/login'"
-                class="font-weight-medium text-primary"
+                class="font-medium text-[#7269ef]"
               >
                 {{ name == "Sign in" ? "Sign up" : "Sign in" }} now
               </router-link>
             </p>
             <p>
               © 2023 Chatvia. Created with
-              <font-awesome-icon :icon="['fas', 'heart']" class="text-danger" />
+              <font-awesome-icon
+                :icon="['fas', 'heart']"
+                class="text-red-600"
+              />
               by Developer
             </p>
           </div>
@@ -146,46 +152,8 @@ const handleOnSubmit = handleSubmit((credentials) => {
 </template>
 
 <style lang="scss" scoped>
-img {
-  display: block;
-  margin: 0 auto;
-}
-
-h4 {
-  color: #495057;
-  font-family: $font-Public-Sans;
-  font-weight: 600;
-  font-size: 1.3125rem;
-}
-
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 0 solid #f5f7fb;
-  border-radius: 0.25rem;
-}
-
 button {
-  display: block;
-  width: 100%;
-  border: 1px solid transparent;
-  padding: 0.47rem 0.75rem;
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  border-radius: 0.25rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  color: #fff;
-  background-color: #7269ef;
-  border-color: #7269ef;
-
-  &:hover {
-    background-color: #5246eb;
-    border-color: #473bea;
-  }
 }
 </style>

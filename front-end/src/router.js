@@ -36,9 +36,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN);
-  if (to.name !== "Login" && !token) {
+  if (to.name !== "Login" && !token && to.name !== "Register")
     next({ name: "Login" });
-  }
   next();
 });
 
