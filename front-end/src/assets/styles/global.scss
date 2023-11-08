@@ -25,7 +25,7 @@ input {
     color: $color-gray;
     padding: 0;
     outline: none;
-    border: none;
+    border: 0;
     font-family: $font-Public-Sans;
 }
 
@@ -42,35 +42,3 @@ ul {
     margin: 0;
     padding: 0;
 }
-
-// .fw-500 {
-//     font-weight: 500;
-// }
-// .bg-soft-light {
-//     background-color: rgba(230, 235, 245, 0.25) !important;
-// }
-
-// .text-primary {
-//     color: $color-purple !important;
-// }
-
-// button {
-//     border: none;
-// }
-
-// .dropdown {
-//     button {
-//         border: none;
-//     }
-
-//     .dropdown-item {
-//         display: flex;
-//         align-items: center;
-//         justify-content: space-between;
-//         cursor: pointer;
-
-//         &:active {
-//             background-color: #fff;
-//         }
-//     }
-// }

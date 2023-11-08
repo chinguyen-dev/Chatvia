@@ -1,8 +1,28 @@
 <script setup>
 import { useChat } from "@/composables/chatComposable";
 import { defineAsyncComponent, onMounted, ref } from "vue";
+import { useEvent } from "@/composables/eventsComposable";
+
+const Modal = defineAsyncComponent(() =>
+  import("@/components/Modal/index.vue")
+);
+const Avatar = defineAsyncComponent(() =>
+  import("../../components/Avatar/index.vue")
+);
+
+const SearchBox = defineAsyncComponent(() =>
+  import("../../components/SearchBox/index.vue")
+);
+const UserCarousel = defineAsyncComponent(() =>
+  import("../../components/UserCarousel/index.vue")
+);
+const UserChat = defineAsyncComponent(() =>
+  import("../../components/UserChat/index.vue")
+);
 
 const { handleOnSearch, handleOnChat, chatStore, userStore } = useChat();
+
+const { toggleModal, modal } = useEvent();
 
 const users = ref([
   {
@@ -38,19 +58,9 @@ const users = ref([
 ]);
 
 const scrollX = ref(0);
-const scrollHeight = ref(0);
-
-const SearchBox = defineAsyncComponent(() =>
-  import("../../components/SearchBox/index.vue")
-);
-const UserCarousel = defineAsyncComponent(() =>
-  import("../../components/UserCarousel/index.vue")
-);
-const UserChat = defineAsyncComponent(() =>
-  import("../../components/UserChat/index.vue")
-);
 
 onMounted(() => {
+  toggleModal();
   const chatListElement = document.getElementById("chat-list");
 
   chatListElement.addEventListener("scroll", function () {
@@ -69,18 +79,18 @@ onMounted(() => {
   <div class="flex flex-col">
     <div class="px-6 pt-6">
       <h2 class="mb-6 font-semibold text-xl text-gray49">Chats</h2>
-      <!-- Search Box -->
       <SearchBox
         type="text"
         :on-submit="handleOnSearch"
         placeholder="Tìm kiếm"
+        @toggle-modal="() => (modal = !modal)"
       />
     </div>
 
     <div class="px-6 pb-6">
-      <!-- User Carousel -->
       <UserCarousel :users="users" />
     </div>
+
     <div class="px-2">
       <h5 class="px-4 mb-3 text-[16px] font-semibold">Recent</h5>
       <div class="relative group h-[calc(100vh_-_280px)]">
@@ -113,6 +123,76 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <Transition>
+      <Modal
+        title="Thêm bạn"
+        v-show="modal"
+        @toggle-modal="(value) => (modal = value)"
+      >
+        <template v-slot:body>
+          <div class="mb-2 h-10 px-4 py-[7px]">
+            <input
+              type="text"
+              class="w-full py-[1px] px-[2px] border-[#d6dbe1] border-b border-solid pb-3 text-[#081c36] text-sm tracking-[.2px]"
+              placeholder="Địa chỉ Email"
+              title="Vui lòng điền địa chỉ Email"
+            />
+          </div>
+          <div class="modal__scroll w-full h-[300px] py-[7px] overflow-x-auto">
+            <div class="flex items-center h-[30px] text-[#7589a3] text-sm px-4">
+              <i class="ri-history-line mr-[5px]"></i>
+              Kết quả gần nhất
+            </div>
+            <div class="hover:bg-[#f3f5f6] group w-full px-4 relative">
+              <div
+                class="flex items-center justify-between h-[58px] py-[7px] cursor-pointer"
+              >
+                <div class="flex items-center">
+                  <!-- Avatar -->
+                  <Avatar
+                    :hidden="false"
+                    :user="{
+                      name: 'Chí Nguyên',
+                      avatar:
+                        'https://s120-ava-talk.zadn.vn/b/d/c/1/24/120/f62c321984a135e398708e06ccdfd502.jpg',
+                    }"
+                    :size="40"
+                  />
+                  <!-- End -->
+                  <div class="text-sm ml-3">
+                    <div class="font-medium text-[#081c36]">Chí Nguyên</div>
+                    <div>Từ địa chỉ Email</div>
+                  </div>
+                </div>
+                <!-- Button -->
+                <div class="text-xl mr-5">
+                  <button
+                    type="button"
+                    class="h-6 hover:text-[#7269ef] rounded-[4px] m-2 font-medium"
+                    title="Trò chuyện"
+                  >
+                    <i class="ri-message-3-line"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="h-6 hover:text-[#7269ef] rounded-[4px] m-2 font-medium"
+                    title="Kết bạn"
+                  >
+                    <i class="ri-user-add-line"></i>
+                  </button>
+                </div>
+                <!-- End -->
+              </div>
+              <i
+                title="Xóa gợi ý kết bạn"
+                class="ri-close-line group-hover:block absolute hidden right-0 top-[-8px] text-[#7589a3] p-[8px] cursor-pointer"
+              ></i>
+            </div>
+          </div>
+        </template>
+      </Modal>
+    </Transition>
   </div>
 </template>
 
@@ -123,5 +203,28 @@ onMounted(() => {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.modal__scroll {
+  &::-webkit-scrollbar {
+    width: 7px;
+    display: block;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #b1b5b9;
+  }
+}
+
+/* we will explain what these classes do next! */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

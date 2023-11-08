@@ -1,4 +1,7 @@
+import { ref } from "vue";
 export const useEvent = () => {
+  const modal = ref(false);
+
   const scrollHeight = (el) => {
     const conversationElement = document.querySelector(el);
     if (conversationElement) {
@@ -20,5 +23,12 @@ export const useEvent = () => {
     });
   };
 
-  return { scrollHeight, toggleEmoji };
+  const toggleModal = () => {
+    document.addEventListener("click", function (event) {
+      const targetElement = event.target;
+      if (targetElement.matches("#modal")) modal.value = false;
+    });
+  };
+
+  return { modal, scrollHeight, toggleEmoji, toggleModal };
 };

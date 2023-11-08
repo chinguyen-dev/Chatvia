@@ -11,6 +11,9 @@ const { onSubmit } = defineProps({
     default: null,
   },
 });
+
+defineEmits(["toggleModal"]);
+
 const searchText = ref("");
 
 const handleOnSearch = () => {
@@ -31,12 +34,13 @@ const handleOnSearch = () => {
     </button>
     <input
       v-bind="$attrs"
-      class="px-2 py-4 bg-transparent flex-grow text-[15px] leading-3"
+      class="px-4 py-2 bg-transparent flex-grow text-[15px] leading-3"
       v-model="searchText"
       :placeholder="placeholder"
     />
     <button
       type="button"
+      @click="() => $emit('toggleModal')"
       class="block text-base bg-transparent px-3 py-2 focus:shadow-focus focus:rounded-e-lg"
     >
       <i class="ri-user-add-line text-lg text-muted"></i>

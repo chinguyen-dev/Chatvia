@@ -80,72 +80,70 @@ const handleOnSubmit = () => {
         </li>
       </ul>
     </div>
-    <div class="my-auto">
-      <ul class="flex flex-wrap justify-center">
-        <li class="my-[7px]">
-          <router-link
-            to="/dark"
-            class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
+    <ul class="flex flex-wrap justify-center">
+      <li class="my-[7px]">
+        <router-link
+          to="/dark"
+          class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
+        >
+          <i class="ri-moon-line"></i>
+        </router-link>
+      </li>
+      <Menu as="div" class="relative inline-block my-[7px]">
+        <MenuButton class="p-1 text-lg text-[#7a7f9a]">
+          <Avatar :user="userStore.user" :hidden="false" />
+        </MenuButton>
+        <transition
+          enter-active-class="transition ease-out duration-100"
+          enter-from-class="transform opacity-0 scale-95"
+          enter-to-class="transform opacity-100 scale-100"
+          leave-active-class="transition ease-in duration-75"
+          leave-from-class="transform opacity-100 scale-100"
+          leave-to-class="transform opacity-0 scale-95"
+        >
+          <MenuItems
+            class="absolute -top-36 z-10 mt-2 w-[150px] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           >
-            <i class="ri-moon-line"></i>
-          </router-link>
-        </li>
-        <Menu as="div" class="relative inline-block">
-          <MenuButton class="p-1 text-lg text-[#7a7f9a]">
-            <Avatar :user="userStore.user" :hidden="false" />
-          </MenuButton>
-          <transition
-            enter-active-class="transition ease-out duration-100"
-            enter-from-class="transform opacity-0 scale-95"
-            enter-to-class="transform opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-75"
-            leave-from-class="transform opacity-100 scale-100"
-            leave-to-class="transform opacity-0 scale-95"
-          >
-            <MenuItems
-              class="absolute -top-36 z-10 mt-2 w-[150px] rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-            >
-              <div class="py-1">
-                <menu-item>
-                  <a
-                    href="#"
-                    class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
-                  >
-                    <span>Hồ sơ</span>
-                    <i
-                      class="ri-profile-line text-muted text-base font-normal"
-                    ></i>
-                  </a>
-                </menu-item>
-                <menu-item>
-                  <a
-                    href="#"
-                    class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
-                  >
-                    <span>Cài đặt</span>
-                    <i
-                      class="text-muted text-base font-normal ri-settings-3-line"
-                    ></i>
-                  </a>
-                </menu-item>
-                <menu-item>
-                  <a
-                    href="#"
-                    @click.prevent="handleOnSubmit"
-                    class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
-                  >
-                    Đăng xuất
-                    <i
-                      class="text-muted text-base font-normal ri-logout-circle-r-line"
-                    ></i>
-                  </a>
-                </menu-item>
-              </div>
-            </MenuItems>
-          </transition>
-        </Menu>
-      </ul>
-    </div>
+            <div class="py-1">
+              <menu-item>
+                <a
+                  href="#"
+                  class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
+                >
+                  <span>Hồ sơ</span>
+                  <i
+                    class="ri-profile-line text-muted text-base font-normal"
+                  ></i>
+                </a>
+              </menu-item>
+              <menu-item>
+                <a
+                  href="#"
+                  class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
+                >
+                  <span>Cài đặt</span>
+                  <i
+                    class="text-muted text-base font-normal ri-settings-3-line"
+                  ></i>
+                </a>
+              </menu-item>
+              <menu-item>
+                <a
+                  href="#"
+                  @click.prevent="handleOnSubmit"
+                  class="flex items-center justify-between px-4 py-2 text-base font-normal hover:bg-gray-100"
+                >
+                  Đăng xuất
+                  <i
+                    class="text-muted text-base font-normal ri-logout-circle-r-line"
+                  ></i>
+                </a>
+              </menu-item>
+            </div>
+          </MenuItems>
+        </transition>
+      </Menu>
+    </ul>
   </div>
 </template>
 <style lang="scss" scoped>
