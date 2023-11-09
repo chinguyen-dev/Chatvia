@@ -8,10 +8,13 @@ const userService = {
     return axiosClient.post(`${baseURL}/api/v1/logout`);
   },
   getUser: () => {
-    return axiosClient.get(`${baseURL}/api/v1/user`);
+    return axiosClient.get(`${baseURL}/api/v1/profile`);
   },
   register: (data) => {
     return axiosClient.post(`${baseURL}/api/v1/register`, data);
+  },
+  findByEmailContaining: (email) => {
+    return axiosClient.get(`${baseURL}/api/v1/user/${email}`);
   },
 };
 export default userService;
