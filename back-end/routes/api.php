@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -22,16 +23,18 @@ Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 Route::prefix('/v1')->group(function () {
     Route::middleware(['auth:sanctum'])->group(function () {
-        Route::get('/user', function (Request $request) {
+        Route::get('/profile', function (Request $request) {
             return response()->json([
                 'data' => $request->user()
             ]);
         });
 
+        Route::resource('/user', UserController::class)->only(['index']);
+        Route::get('/user/{email}', [UserController::class, 'findByEmailContaining']);
+
         Route::resource('/chat', ChatController::class)->except(['create']);
         Route::resource('/message', MessageController::class)->only(['store']);
         Route::put('/message/seen', [MessageController::class, 'updateSeen']);
-
         Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     });
 

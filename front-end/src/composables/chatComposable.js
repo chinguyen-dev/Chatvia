@@ -1,9 +1,16 @@
 import chatService from "@/services/chatService";
 import websocketService from "@/services/websocket";
+import userService from "@/services/userService";
 import { useChatStore } from "@/stores/chatStore";
 import { useUserStore } from "@/stores/userStore";
+import { reactive, ref } from "vue";
 
 export const useChat = () => {
+  const search = reactive({
+    email: "",
+    typingTimeOut: null,
+  });
+  const users = ref([]);
   const chatStore = useChatStore();
   const userStore = useUserStore();
 
@@ -16,7 +23,6 @@ export const useChat = () => {
     }
   };
   const handleOnSearch = (payload) => console.log(payload);
-
   const handleOnChat = async (chat) => {
     if (chat.unread > 0) {
       let payload = {
@@ -41,13 +47,29 @@ export const useChat = () => {
       });
     }
   };
+  const handleFindByEmailUsers = async () => {
+    if (search.email === "") return;
+    if (search.typingTimeOut) clearTimeout(search.typingTimeOut);
+    search.typingTimeOut = setTimeout(async () => {
+      try {
+        const { data } = await userService.findByEmailContaining(search.email);
+        users.value = data;
+      } catch (error) {
+        console.log(error);
+      }
+    }, 300);
+  };
 
   return {
+    search,
+    users,
     chatStore,
     userStore,
     websocketService,
+    chatService,
     handleSendChat,
     handleOnSearch,
     handleOnChat,
+    handleFindByEmailUsers,
   };
 };

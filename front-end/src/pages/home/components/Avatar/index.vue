@@ -28,7 +28,7 @@ defineProps({
     />
     <span
       v-else
-      class="flex justify-center items-center h-full font-medium bg-[rgba(114, 105, 239, 0.25)] rounded-full text-primary"
+      class="flex justify-center items-center h-full font-medium bg-[#7269ef40] text-[#7269ef] rounded-full text-primary"
     >
       {{ user?.name?.charAt(0) }}
     </span>

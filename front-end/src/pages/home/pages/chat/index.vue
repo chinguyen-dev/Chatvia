@@ -20,11 +20,20 @@ const UserChat = defineAsyncComponent(() =>
   import("../../components/UserChat/index.vue")
 );
 
-const { handleOnSearch, handleOnChat, chatStore, userStore } = useChat();
+const {
+  search,
+  users,
+  chatStore,
+  userStore,
+  handleOnSearch,
+  handleOnChat,
+  handleFindByEmailUsers,
+  chatService,
+} = useChat();
 
-const { toggleModal, modal } = useEvent();
+const { toggleModal, modal, positionY, getVerticalPosition } = useEvent();
 
-const users = ref([
+const userCarousel = ref([
   {
     name: "Võ Chí Nguyên",
     avatar:
@@ -57,22 +66,23 @@ const users = ref([
   },
 ]);
 
-const scrollX = ref(0);
-
 onMounted(() => {
   toggleModal();
-  const chatListElement = document.getElementById("chat-list");
-
-  chatListElement.addEventListener("scroll", function () {
-    const scrollTop = chatListElement.scrollTop;
-    const scrollHeight = chatListElement.scrollHeight;
-    const clientHeight = chatListElement.clientHeight;
-    const percent = Math.ceil(
-      (scrollTop / (scrollHeight - clientHeight)) * 210
-    );
-    scrollX.value = percent;
-  });
+  getVerticalPosition("chat-list");
 });
+
+const handleCreateRoom = async ({ id }) => {
+  try {
+    const res = await chatService.createRoom({
+      type: "people",
+      to: id,
+    });
+    chatStore.addChat(res.data);
+    modal.value = false;
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
 
 <template>
@@ -88,7 +98,7 @@ onMounted(() => {
     </div>
 
     <div class="px-6 pb-6">
-      <UserCarousel :users="users" />
+      <UserCarousel :users="userCarousel" />
     </div>
 
     <div class="px-2">
@@ -117,7 +127,7 @@ onMounted(() => {
           <div
             class="scrollbar w-[7px] h-[205px] rounded-[7px] cursor-pointer bg-[#d0dae3]"
             :style="{
-              transform: `translate3d(0px, ${scrollX}px, 0px)`,
+              transform: `translate3d(0px, ${positionY}px, 0px)`,
             }"
           ></div>
         </div>
@@ -128,40 +138,47 @@ onMounted(() => {
       <Modal
         title="Thêm bạn"
         v-show="modal"
-        @toggle-modal="(value) => (modal = value)"
+        @toggle-modal="
+          (value) => {
+            modal = value;
+            search.email = '';
+          }
+        "
       >
-        <template v-slot:body>
+        <template #body>
           <div class="mb-2 h-10 px-4 py-[7px]">
-            <input
-              type="text"
-              class="w-full py-[1px] px-[2px] border-[#d6dbe1] border-b border-solid pb-3 text-[#081c36] text-sm tracking-[.2px]"
-              placeholder="Địa chỉ Email"
-              title="Vui lòng điền địa chỉ Email"
-            />
+            <form @submit.prevent="handleFindByEmailUsers">
+              <input
+                type="text"
+                v-model="search.email"
+                @keyup="handleFindByEmailUsers"
+                class="w-full py-[1px] px-[2px] border-[#d6dbe1] border-b border-solid pb-3 text-[#081c36] text-sm tracking-[.2px]"
+                placeholder="Địa chỉ Email"
+                title="Vui lòng điền địa chỉ Email"
+              />
+            </form>
           </div>
           <div class="modal__scroll w-full h-[300px] py-[7px] overflow-x-auto">
             <div class="flex items-center h-[30px] text-[#7589a3] text-sm px-4">
               <i class="ri-history-line mr-[5px]"></i>
               Kết quả gần nhất
             </div>
-            <div class="hover:bg-[#f3f5f6] group w-full px-4 relative">
+            <div
+              class="hover:bg-[#f3f5f6] group w-full px-4 relative"
+              v-for="user in users"
+              :key="user.id"
+            >
               <div
                 class="flex items-center justify-between h-[58px] py-[7px] cursor-pointer"
               >
                 <div class="flex items-center">
                   <!-- Avatar -->
-                  <Avatar
-                    :hidden="false"
-                    :user="{
-                      name: 'Chí Nguyên',
-                      avatar:
-                        'https://s120-ava-talk.zadn.vn/b/d/c/1/24/120/f62c321984a135e398708e06ccdfd502.jpg',
-                    }"
-                    :size="40"
-                  />
+                  <Avatar :hidden="false" :user="user" :size="40" />
                   <!-- End -->
                   <div class="text-sm ml-3">
-                    <div class="font-medium text-[#081c36]">Chí Nguyên</div>
+                    <div class="font-medium text-[#081c36]">
+                      {{ user.name }}
+                    </div>
                     <div>Từ địa chỉ Email</div>
                   </div>
                 </div>
@@ -169,6 +186,7 @@ onMounted(() => {
                 <div class="text-xl mr-5">
                   <button
                     type="button"
+                    @click="handleCreateRoom(user)"
                     class="h-6 hover:text-[#7269ef] rounded-[4px] m-2 font-medium"
                     title="Trò chuyện"
                   >
