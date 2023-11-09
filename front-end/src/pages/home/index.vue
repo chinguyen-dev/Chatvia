@@ -23,11 +23,19 @@ onMounted(async () => {
   websocketService
     .subscribe()
     .then(function (channel) {
-      channel.listen(".NEW-MESSAGE", ({ conversation_id, message }) => {
-        chatStore.chatList.map(
-          (chat) =>
-            chat.chat_id === conversation_id && chat.messages.push(message)
-        );
+      channel.listen(".NEW-MESSAGE", async ({ conversation_id, message }) => {
+        if (chatStore.chat.chat_id === conversation_id) {
+          await chatStore.readMessage({
+            conversation_id,
+            sender_id: message.sender.id,
+            seen: true,
+          });
+        } else {
+          chatStore.chatList.map(
+            (chat) =>
+              chat.chat_id === conversation_id && chat.messages.push(message)
+          );
+        }
       });
     })
     .catch(function (echo) {

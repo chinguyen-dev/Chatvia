@@ -66,6 +66,7 @@ export const useChat = () => {
     chatStore,
     userStore,
     websocketService,
+    chatService,
     handleSendChat,
     handleOnSearch,
     handleOnChat,

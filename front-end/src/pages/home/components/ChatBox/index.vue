@@ -75,7 +75,7 @@ onUpdated(() => onscroll && onscroll());
                 {{
                   chat?.name ||
                   convertName(
-                    chat?.members.find(
+                    chat?.members?.find(
                       (member) => member.id !== userStore.user.id
                     ).name
                   )

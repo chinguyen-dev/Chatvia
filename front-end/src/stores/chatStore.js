@@ -13,16 +13,18 @@ export const useChatStore = defineStore("chat", {
   getters: {
     getChats: ({ chatList, chat }) => {
       const userStore = useUserStore();
-      return chatList.map((conversation) => {
-        return {
-          ...conversation,
-          active: conversation.chat_id === chat?.chat_id,
-          unread: conversation.messages.filter(
-            (message) =>
-              !message.unread && message.sender?.id !== userStore.user?.id
-          ).length,
-        };
-      });
+      return chatList
+        .map((conversation) => {
+          return {
+            ...conversation,
+            active: conversation.chat_id === chat?.chat_id,
+            unread: conversation.messages.filter(
+              (message) =>
+                !message.unread && message.sender?.id !== userStore.user?.id
+            ).length,
+          };
+        })
+        .sort((a, b) => (a.active === b.active ? 0 : a.active ? -1 : 1));
     },
     countAllUnreadMessages: ({ chatList }) => {
       let count = 0;
@@ -61,10 +63,11 @@ export const useChatStore = defineStore("chat", {
             (chat) => chat.chat_id === this.chat.chat_id
           );
         }
-        localStorage.setItem(
-          import.meta.env.VITE_STORAGE_CHAT,
-          JSON.stringify(this.chat)
-        );
+        this.chat &&
+          localStorage.setItem(
+            import.meta.env.VITE_STORAGE_CHAT,
+            JSON.stringify(this.chat)
+          );
         this.isLoading = false;
       } catch (error) {
         console.log("server error");
@@ -84,6 +87,13 @@ export const useChatStore = defineStore("chat", {
       } catch (error) {
         console.log("Error updating");
       }
+    },
+    addChat(data) {
+      const isContains = this.chatList.some(
+        (chat) => chat.chat_id === data.chat_id
+      );
+      if (!isContains) this.chatList.push(data);
+      this.chat = data;
     },
   },
 });

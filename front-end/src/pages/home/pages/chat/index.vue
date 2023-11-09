@@ -28,6 +28,7 @@ const {
   handleOnSearch,
   handleOnChat,
   handleFindByEmailUsers,
+  chatService,
 } = useChat();
 
 const { toggleModal, modal, positionY, getVerticalPosition } = useEvent();
@@ -69,6 +70,19 @@ onMounted(() => {
   toggleModal();
   getVerticalPosition("chat-list");
 });
+
+const handleCreateRoom = async ({ id }) => {
+  try {
+    const res = await chatService.createRoom({
+      type: "people",
+      to: id,
+    });
+    chatStore.addChat(res.data);
+    modal.value = false;
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
 
 <template>
@@ -124,7 +138,12 @@ onMounted(() => {
       <Modal
         title="Thêm bạn"
         v-show="modal"
-        @toggle-modal="(value) => (modal = value)"
+        @toggle-modal="
+          (value) => {
+            modal = value;
+            search.email = '';
+          }
+        "
       >
         <template #body>
           <div class="mb-2 h-10 px-4 py-[7px]">
@@ -167,6 +186,7 @@ onMounted(() => {
                 <div class="text-xl mr-5">
                   <button
                     type="button"
+                    @click="handleCreateRoom(user)"
                     class="h-6 hover:text-[#7269ef] rounded-[4px] m-2 font-medium"
                     title="Trò chuyện"
                   >
