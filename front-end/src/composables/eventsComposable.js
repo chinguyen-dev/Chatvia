@@ -15,6 +15,7 @@ export const useEvent = () => {
     document.addEventListener("click", function (event) {
       const targetElement = event.target;
       const EmojiPicker = document.querySelector(".v3-emoji-picker");
+      if (targetElement.matches("#modal")) modal.value = false;
       if (
         !targetElement.matches("#dropdownButton") &&
         !targetElement.matches(".ri-emotion-happy-line") &&
@@ -22,13 +23,6 @@ export const useEvent = () => {
       ) {
         state.value = false;
       }
-    });
-  };
-
-  const toggleModal = () => {
-    document.addEventListener("click", function (event) {
-      const targetElement = event.target;
-      if (targetElement.matches("#modal")) modal.value = false;
     });
   };
 
@@ -50,7 +44,6 @@ export const useEvent = () => {
     positionY,
     scrollHeight,
     toggleEmoji,
-    toggleModal,
     getVerticalPosition,
   };
 };

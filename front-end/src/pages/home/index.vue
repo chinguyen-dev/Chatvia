@@ -37,6 +37,7 @@ onMounted(async () => {
           );
         }
       });
+      chatStore.setState({ channel });
     })
     .catch(function (echo) {
       console.log(echo);

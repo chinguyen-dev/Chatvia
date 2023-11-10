@@ -31,7 +31,7 @@ const {
   chatService,
 } = useChat();
 
-const { toggleModal, modal, positionY, getVerticalPosition } = useEvent();
+const { modal, positionY, getVerticalPosition } = useEvent();
 
 const userCarousel = ref([
   {
@@ -67,7 +67,6 @@ const userCarousel = ref([
 ]);
 
 onMounted(() => {
-  toggleModal();
   getVerticalPosition("chat-list");
 });
 

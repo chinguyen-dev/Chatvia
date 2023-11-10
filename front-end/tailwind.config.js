@@ -7,6 +7,7 @@ export default {
         gray87: "#878a92",
         gray49: "#495057",
         muted: "#7a7f9a",
+        primary: "#7269ef",
       },
       boxShadow: {
         "3xl": "0 2px 4px rgba(15, 34, 58, 0.12)",
