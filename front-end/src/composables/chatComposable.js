@@ -128,5 +128,6 @@ export const useChat = () => {
     rooms: computed(() => chatStore.getChats),
     currentRoom: computed(() => chatStore.chat),
     loading: computed(() => chatStore.loading),
+    typing: computed(() => chatStore.typing),
   };
 };

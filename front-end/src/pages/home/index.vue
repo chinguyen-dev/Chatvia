@@ -12,6 +12,7 @@ const userStore = useUserStore();
 const componentCurrent = ref("chat");
 const { handleLogout } = useAuth();
 const {
+  typing,
   loading,
   currentRoom,
   handleUserTyping,
@@ -78,7 +79,11 @@ onMounted(() => {
       </div>
     </div>
 
-    <ChatBox :room="currentRoom" :onsubmit="handleSendMessage" />
+    <ChatBox
+      :room="currentRoom"
+      :onsubmit="handleSendMessage"
+      :typing="typing"
+    />
 
     <Loading v-if="loading" />
   </div>

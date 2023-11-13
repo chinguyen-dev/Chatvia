@@ -3,8 +3,7 @@ import { useEmoji } from "@/composables/emojiComposable";
 import { useEvent } from "@/composables/eventsComposable";
 import { useCommon } from "@/composables/commonComposable";
 import { useUserStore } from "@/stores/userStore";
-import { useChatStore } from "@/stores/chatStore";
-import { defineAsyncComponent, onMounted, onUpdated } from "vue";
+import { computed, defineAsyncComponent, onMounted, onUpdated } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import "vue3-emoji-picker/css";
 
@@ -14,12 +13,11 @@ const SlideShow = defineAsyncComponent(() => import("../SlideShow/index.vue"));
 const Typing = defineAsyncComponent(() => import("../Typing/index.vue"));
 
 const userStore = useUserStore();
-const chatStore = useChatStore();
 const { toggleEmoji, scrollHeight } = useEvent();
 const { findSenderById, convertName } = useCommon();
 const { handleToggleEmoji, emoji, input, onSelectEmoji } = useEmoji();
 
-const { onsubmit, onscroll } = defineProps({
+const { onsubmit, onscroll, typing } = defineProps({
   onsubmit: {
     type: Function,
     default: null,
@@ -28,6 +26,7 @@ const { onsubmit, onscroll } = defineProps({
     type: Object,
     default: null,
   },
+  typing: Boolean,
 });
 
 const handleOnSubmit = (room) => {
@@ -173,7 +172,7 @@ onUpdated(() => scrollHeight(".scrollbar"));
             </div>
           </div>
         </div>
-        <div class="absolute bottom-0 left-0" v-if="chatStore.typing">
+        <div class="absolute bottom-0 left-0" v-if="typing">
           <Typing />
         </div>
       </div>
