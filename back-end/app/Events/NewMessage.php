@@ -30,11 +30,9 @@ class NewMessage implements ShouldBroadcast
      *
      * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new PrivateChannel('user.' . $this->receiver->id),
-        ];
+        return new PrivateChannel('user.' . $this->receiver->id);
     }
 
     public function broadcastAs(): string

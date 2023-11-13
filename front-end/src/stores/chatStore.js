@@ -5,14 +5,13 @@ export const useChatStore = defineStore("chat", {
   state: () => ({
     chatList: [],
     chat: null,
-    isLoading: false,
-    channel: null,
+    typing: false,
   }),
   getters: {
     getChats: ({ chatList, chat }) => {
       const userStore = useUserStore();
       return chatList
-        .map((conversation) => {
+        ?.map((conversation) => {
           return {
             ...conversation,
             active: conversation.chat_id === chat?.chat_id,
@@ -27,7 +26,7 @@ export const useChatStore = defineStore("chat", {
     countAllUnreadMessages: ({ chatList }) => {
       let count = 0;
       const userStore = useUserStore();
-      chatList.map((chat) => {
+      chatList?.map((chat) => {
         count += chat.messages.filter(
           (message) =>
             !message.unread && message.sender?.id !== userStore.user?.id
@@ -35,29 +34,14 @@ export const useChatStore = defineStore("chat", {
       });
       return count;
     },
+    loading: ({ chatList }) => chatList.length === 0,
   },
   actions: {
-    setState({ chatList, chat, isLoading, channel }) {
+    setState({ chatList, chat, isLoading, typing }) {
       if (chatList) this.chatList = chatList;
-      if (chat) {
-        localStorage.setItem(
-          import.meta.env.VITE_STORAGE_CHAT,
-          JSON.stringify(chat)
-        );
-        this.chat = chat;
-      }
-      if (channel) this.channel = channel;
-      this.isLoading = isLoading;
-    },
-    async getConversations() {
-      try {
-        this.isLoading = true;
-        const { data } = await chatService.getConversations();
-        this.chatList = data;
-        this.isLoading = false;
-      } catch (error) {
-        console.log("server error");
-      }
+      if (chat) this.chat = chat;
+      if (isLoading) this.isLoading = isLoading;
+      this.typing = typing && typing;
     },
     async readMessage(payload) {
       try {
@@ -74,12 +58,19 @@ export const useChatStore = defineStore("chat", {
         console.log("Error updating");
       }
     },
-    addChat(data) {
-      const isContains = this.chatList.some(
-        (chat) => chat.chat_id === data.chat_id
-      );
-      if (!isContains) this.chatList.push(data);
-      this.chat = data;
+
+    async createRoom(payload) {
+      try {
+        const response = await chatService.createRoom(payload);
+        const chat = response.data;
+        const isContains = this.chatList.some(
+          (chat) => chat.chat_id === response.data?.chat_id
+        );
+        if (!isContains) this.chatList.push(chat);
+        this.chat = chat;
+      } catch (error) {
+        console.error("Error: ", error);
+      }
     },
   },
 });

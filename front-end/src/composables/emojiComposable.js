@@ -8,17 +8,10 @@ export const useEmoji = () => {
 
   const handleToggleEmoji = () => (emoji.value = !emoji.value);
 
-  const convertName = (name) => {
-    if (!name) return;
-    const arr = name.split(" ");
-    return arr.slice(arr.length - Math.ceil(arr.length / 2)).join(" ");
-  };
-
   return {
     emoji,
     input,
     onSelectEmoji,
     handleToggleEmoji,
-    convertName,
   };
 };

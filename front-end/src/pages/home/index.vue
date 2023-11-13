@@ -1,13 +1,23 @@
 <script setup>
-import { defineAsyncComponent, onMounted } from "vue";
-
+import { computed, defineAsyncComponent, onMounted, ref } from "vue";
+import websocketService from "@/services/websocket";
 import { useAuth } from "@/composables/authComposable";
 import { useChat } from "@/composables/chatComposable";
-import { useEvent } from "@/composables/eventsComposable";
+import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
+const userStore = useUserStore();
+
+const componentCurrent = ref("chat");
 const { handleLogout } = useAuth();
-const { scrollHeight } = useEvent();
-const { handleSendChat, chatStore, websocketService } = useChat();
+const {
+  loading,
+  currentRoom,
+  handleUserTyping,
+  handleSendMessage,
+  handleReceiveMsg,
+} = useChat();
 
 const ChatBox = defineAsyncComponent(() =>
   import("./components/ChatBox/index.vue")
@@ -15,59 +25,61 @@ const ChatBox = defineAsyncComponent(() =>
 const Sidebar = defineAsyncComponent(() =>
   import("./components/Sidebar/index.vue")
 );
+const Chat = defineAsyncComponent(() => import("./pages/chat/index.vue"));
+const Profile = defineAsyncComponent(() => import("./pages/profile/index.vue"));
 const Loading = defineAsyncComponent(() => import("@/components/Loading.vue"));
+const Component = computed(() => {
+  let component;
+  switch (componentCurrent.value.toUpperCase()) {
+    case "PROFILE":
+      component = Profile;
+      break;
+    case "CHAT":
+      component = Chat;
+      break;
+    default:
+      router.push("/404");
+      break;
+  }
+  return component;
+});
 
-onMounted(async () => {
-  await websocketService.connect();
-  await chatStore.getConversations();
+onMounted(() => {
   websocketService
     .subscribe()
-    .then(function (channel) {
-      channel.listen(".NEW-MESSAGE", async ({ conversation_id, message }) => {
-        if (chatStore.chat.chat_id === conversation_id) {
-          await chatStore.readMessage({
-            conversation_id,
-            sender_id: message.sender.id,
-            seen: true,
-          });
-        } else {
-          chatStore.chatList.map(
-            (chat) =>
-              chat.chat_id === conversation_id && chat.messages.push(message)
-          );
-        }
-      });
-      chatStore.setState({ channel });
+    .then(function (socket) {
+      const userPriChannel = socket.private(`user.${userStore.user?.id}`);
+      return {
+        userPriChannel,
+      };
     })
-    .catch(function (echo) {
-      console.log(echo);
+    .then(function ({ userPriChannel }) {
+      userPriChannel
+        .listen(".NEW-MESSAGE", async (response) => {
+          handleReceiveMsg(response);
+        })
+        .listenForWhisper("typing", (response) => handleUserTyping(response));
     });
 });
 </script>
 
 <template>
   <div class="wrapper flex">
-    <!--Sidebar.start-->
-    <Sidebar :onsubmit="handleLogout" />
-    <!--Sidebar.End-->
+    <Sidebar
+      :onsubmit="handleLogout"
+      :on-click="(componentName) => (componentCurrent = componentName)"
+    />
 
-    <!--Chat.list.start-->
     <div class="min-w-[380px] max-w-[380px] h-screen bg-[#f5f7fb] me-1">
       <div class="tab-content">
-        <router-view />
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
       </div>
     </div>
-    <!--Chat.list.end-->
 
-    <!--Chat.box.start-->
-    <ChatBox
-      :onsubmit="handleSendChat"
-      :chat="chatStore.chat"
-      :onscroll="() => scrollHeight('.chat-conversation .content')"
-    />
-    <!--Chat.box.end-->
+    <ChatBox :room="currentRoom" :onsubmit="handleSendMessage" />
 
-    <!--Loading-->
-    <Loading v-if="chatStore.isLoading" />
+    <Loading v-if="loading" />
   </div>
 </template>

@@ -1,22 +1,51 @@
 <script setup>
-import { defineAsyncComponent, ref } from "vue";
+import { defineAsyncComponent, reactive, ref } from "vue";
 import { useUserStore } from "@/stores/userStore";
 import { useChatStore } from "@/stores/ChatStore";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 
 const userStore = useUserStore();
 const chatStore = useChatStore();
+
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 const Badge = defineAsyncComponent(() =>
   import("@/components/Badge/index.vue")
 );
 
-const avatarLink = ref(
-  "http://chatvia-light.vue.themesbrand.com/img/logo.de6401ef.svg"
-);
+const sidebar = reactive({
+  logo: "http://chatvia-light.vue.themesbrand.com/img/logo.de6401ef.svg",
+  items: [
+    {
+      name: "profile",
+      icon: "ri-user-2-line",
+      active: false,
+    },
+    {
+      name: "chat",
+      icon: "ri-message-3-line",
+      active: true,
+    },
+    {
+      name: "group",
+      icon: "ri-group-line",
+    },
+    {
+      name: "contacts",
+      icon: "ri-contacts-line",
+    },
+    {
+      name: "settings",
+      icon: "ri-settings-2-line",
+    },
+  ],
+});
 
-const { onsubmit } = defineProps({
+const { onsubmit, onClick } = defineProps({
   onsubmit: {
+    type: Function,
+    default: null,
+  },
+  onClick: {
     type: Function,
     default: null,
   },
@@ -26,6 +55,15 @@ const handleOnSubmit = () => {
   if (!onsubmit) return;
   onsubmit();
 };
+
+const handleOnClick = (tabName) => {
+  if (!onClick) return;
+  sidebar.items = sidebar.items.map((item) => ({
+    ...item,
+    active: item.name === tabName,
+  }));
+  onClick(tabName);
+};
 </script>
 
 <template>
@@ -33,50 +71,28 @@ const handleOnSubmit = () => {
     class="flex flex-col mr-1 min-w-[75px] max-w-[75px] h-screen min-h-[570px] bg-white z-[9] shadow-3xl"
   >
     <router-link to="/chat" class="flex justify-center items-center h-[70px]">
-      <img class="h-[30px]" alt="avatar" :src="avatarLink" />
+      <img class="h-[30px]" alt="avatar" :src="sidebar.logo" />
     </router-link>
     <div class="my-auto">
       <ul class="flex flex-wrap justify-center">
-        <li class="my-[7px]">
-          <router-link
-            to="/profile"
-            class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
+        <li
+          class="my-[7px]"
+          v-for="({ name, icon, active }, index) in sidebar.items"
+          :key="index"
+        >
+          <p
+            @click="handleOnClick(name)"
+            :title="name"
+            :class="active && 'text-primary'"
+            class="cursor-pointer w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
           >
-            <i class="ri-user-2-line"></i>
-          </router-link>
-        </li>
-        <li class="my-[7px]">
-          <router-link
-            to="/chat"
-            class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
-          >
-            <i class="ri-message-3-line"></i>
+            <i :class="icon"></i>
             <Badge
+              v-if="name === 'chat'"
               :value="chatStore.countAllUnreadMessages"
               class="absolute top-0 right-0"
             />
-          </router-link>
-        </li>
-        <li class="my-[7px]">
-          <router-link
-            to="/groups"
-            class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
-            ><i class="ri-group-line"></i
-          ></router-link>
-        </li>
-        <li class="my-[7px]">
-          <router-link
-            to="/contacts"
-            class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
-            ><i class="ri-contacts-line"></i
-          ></router-link>
-        </li>
-        <li class="my-[7px]">
-          <router-link
-            to="/settings"
-            class="block w-[56px] h-[56px] text-[24px] text-center text-muted leading-[56px] rounded-lg relative"
-            ><i class="ri-settings-2-line"></i
-          ></router-link>
+          </p>
         </li>
       </ul>
     </div>
@@ -146,8 +162,4 @@ const handleOnSubmit = () => {
     </ul>
   </div>
 </template>
-<style lang="scss" scoped>
-a.active {
-  color: #7269ef;
-}
-</style>
+<style lang="scss" scoped></style>

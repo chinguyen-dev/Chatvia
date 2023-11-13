@@ -3,6 +3,7 @@
 use App\Http\Resources\MemberResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,5 @@ Broadcast::channel('room.{roomId}', function ($user, $roomId) {
 });
 
 Broadcast::channel('user.{id}', function ($user, $id) {
-    $receiver = User::find($id);
-    return $receiver ? true : false;
+    return auth()->check();
 });

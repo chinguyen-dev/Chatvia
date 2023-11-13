@@ -40,7 +40,7 @@ class MessageController extends Controller
         if (!$receiver) throw new NotFoundException('Receiver not found');
 
         $message = Message::create(
-            array_merge($request->all(), ['sender_id' => auth()->id(),])
+            array_merge($request->all(), ['sender_id' => auth()->id()])
         );
         broadcast(new NewMessage($receiver, $message))->toOthers();
         return new MessageResource($message);

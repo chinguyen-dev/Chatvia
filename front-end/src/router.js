@@ -4,12 +4,6 @@ const routes = [
     path: "/",
     component: () => import("./pages/home/index.vue"),
     alias: ["/chat", "/home"],
-    children: [
-      {
-        path: "",
-        component: () => import("./pages/home/pages/chat/index.vue"),
-      },
-    ],
   },
   {
     path: "/login",
@@ -31,7 +25,7 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  linkExactActiveClass: "active",
+  // linkExactActiveClass: "active",
 });
 
 router.beforeEach((to, from, next) => {

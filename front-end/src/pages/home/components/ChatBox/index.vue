@@ -1,46 +1,40 @@
 <script setup>
 import { useEmoji } from "@/composables/emojiComposable";
 import { useEvent } from "@/composables/eventsComposable";
+import { useCommon } from "@/composables/commonComposable";
 import { useUserStore } from "@/stores/userStore";
+import { useChatStore } from "@/stores/chatStore";
 import { defineAsyncComponent, onMounted, onUpdated } from "vue";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-
 import "vue3-emoji-picker/css";
 
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
-// import picker compopnent
 const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
 const SlideShow = defineAsyncComponent(() => import("../SlideShow/index.vue"));
-
-const { handleToggleEmoji, emoji, input, onSelectEmoji, convertName } =
-  useEmoji();
-const { toggleEmoji } = useEvent();
+const Typing = defineAsyncComponent(() => import("../Typing/index.vue"));
 
 const userStore = useUserStore();
+const chatStore = useChatStore();
+const { toggleEmoji, scrollHeight } = useEvent();
+const { findSenderById, convertName } = useCommon();
+const { handleToggleEmoji, emoji, input, onSelectEmoji } = useEmoji();
 
-const { onsubmit, chat, onscroll } = defineProps({
+const { onsubmit, onscroll } = defineProps({
   onsubmit: {
     type: Function,
     default: null,
   },
-  chat: {
+  room: {
     type: Object,
-    default: null,
-  },
-  onscroll: {
-    type: Function,
     default: null,
   },
 });
 
-const handleOnSubmit = (chat) => {
-  if (!onsubmit || !chat) return;
+const handleOnSubmit = (room) => {
+  if (!onsubmit || !room) return;
   const payload = {
-    conversation_id: chat.chat_id,
-    receiver_id:
-      chat.type == "people"
-        ? chat.members.find((member) => member.id !== userStore.user.id).id
-        : null,
+    conversation_id: room?.chat_id,
+    receiver_id: room.type == "people" ? findSenderById(room)?.id : null,
     content: input.value,
   };
   onsubmit(payload);
@@ -57,47 +51,52 @@ const senderOrGroup = (chat) => {
       };
 };
 
+const typingEvent = (chat) => {
+  const user = chat?.members.find((member) => member.id !== userStore.user.id);
+  window.Echo.private(`user.${user.id}`).whisper("typing", {
+    type: chat?.type,
+    user,
+    roomId: chat?.chat_id,
+  });
+};
+
+const checkPositionMessage = (message) => {
+  return message.sender?.id == userStore.user.id
+    ? "right flex justify-end"
+    : "flex";
+};
+
 onMounted(() => {
-  onscroll && onscroll();
+  scrollHeight(".scrollbar");
   toggleEmoji(emoji);
 });
 
-onUpdated(() => onscroll && onscroll());
+onUpdated(() => scrollHeight(".scrollbar"));
 </script>
 
 <template>
   <div class="w-full bg-white shadow-3xl transition-all duration-[0.4s]">
-    <div class="w-full relative overflow-hidden" v-show="chat">
+    <div class="w-full relative overflow-hidden" v-show="room">
       <!-- Header -->
       <div class="p-6 border border-solid border-[#f0eff5]">
         <div class="grid grid-cols-2">
           <div class="flex items-center">
-            <Avatar class="me-3" :user="senderOrGroup(chat)" :size="40" />
+            <Avatar class="me-3" :user="senderOrGroup(room)" :size="40" />
             <h5 class="flex-grow font-semibold text-base">
-              {{
-                chat?.name ||
-                convertName(
-                  chat?.members?.find(
-                    (member) => member.id !== userStore.user.id
-                  ).name
-                )
-              }}
+              {{ room?.name || convertName(findSenderById(room)?.name) }}
             </h5>
           </div>
         </div>
       </div>
+      <!-- Body -->
       <div class="relative h-[calc(100vh_-_178px)]">
         <div
           class="scrollbar absolute m-0 top-0 right-0 left-0 bottom-0 p-6 overflow-x-auto"
         >
           <div
-            :class="
-              message.sender?.id == userStore.user.id
-                ? 'right flex justify-end'
-                : 'flex'
-            "
-            v-for="message in chat?.messages"
             :key="message.id"
+            v-for="message in room?.messages"
+            :class="checkPositionMessage(message)"
           >
             <div class="message flex items-end mb-6">
               <Avatar
@@ -166,7 +165,7 @@ onUpdated(() => onscroll && onscroll());
                 <div class="name text-sm font-medium">
                   {{
                     message.sender?.id == userStore.user.id
-                      ? convertName(userStore.user.name)
+                      ? convertName(userStore.user?.name)
                       : convertName(message.sender?.name)
                   }}
                 </div>
@@ -174,15 +173,19 @@ onUpdated(() => onscroll && onscroll());
             </div>
           </div>
         </div>
+        <div class="absolute bottom-0 left-0" v-if="chatStore.typing">
+          <Typing />
+        </div>
       </div>
       <!-- Footer -->
       <div class="p-5 border-t">
-        <form @submit.prevent="handleOnSubmit(chat)" class="flex items-center">
+        <form @submit.prevent="handleOnSubmit(room)" class="flex items-center">
           <input
             type="text"
             class="h-10 w-full bg-[#e6ebf5] py-3 pr-4 pl-3 rounded"
             placeholder="Type message"
             v-model="input"
+            @keydown="typingEvent(room)"
           />
           <div class="flex relative items-center ml-[5px]">
             <div class="emoji">
@@ -217,7 +220,8 @@ onUpdated(() => onscroll && onscroll());
         </form>
       </div>
     </div>
-    <div class="w-full pt-20" v-show="!chat">
+    <!-- Slide Show -->
+    <div class="w-full pt-20" v-show="!room">
       <!-- Slide show -->
       <SlideShow />
     </div>

@@ -1,7 +1,6 @@
 import { ref } from "vue";
 export const useEvent = () => {
   const modal = ref(false);
-
   const positionY = ref(0);
 
   const scrollHeight = (el) => {

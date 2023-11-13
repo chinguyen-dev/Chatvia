@@ -5,9 +5,9 @@ import Echo from "laravel-echo";
 const baseURL = import.meta.env.VITE_BASE_URL;
 
 const websocketService = {
-  connect() {
+  connection() {
     if (!localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN)) return;
-    window.Echo = new Echo({
+    return new Echo({
       broadcaster: "pusher",
       key: import.meta.env.VITE_APP_WEBSOCKETS_KEY,
       wsHost: import.meta.env.VITE_APP_WEBSOCKETS_SERVER,
@@ -23,6 +23,10 @@ const websocketService = {
                 `${baseURL}/api/broadcasting/auth`,
                 { socket_id: socketId, channel_name: channel.name }
               );
+              localStorage.setItem(
+                import.meta.env.VITE_STORAGE_SOCKET_ID,
+                socketId
+              );
               callback(false, response);
             } catch (error) {
               callback(true, error);
@@ -33,14 +37,11 @@ const websocketService = {
       },
     });
   },
-  subscribe(type = import.meta.env.VITE_PRIVATE_CHANNEL) {
-    const userStore = useUserStore();
+  subscribe() {
+    const socket = this.connection();
+    window.Echo = socket;
     return new Promise(function (resolve, reject) {
-      let channel;
-      if (type === import.meta.env.VITE_PRIVATE_CHANNEL) {
-        channel = window.Echo.private(`user.${userStore.user?.id}`);
-      }
-      channel ? resolve(channel) : reject(window.Echo);
+      resolve(socket);
     });
   },
 };

@@ -16,6 +16,9 @@ export default {
       translate: {
         "3d": "translate3d(-50%, -50%, 0)",
       },
+      fontFamily: {
+        nunito: '"Nunito", sans-serif',
+      },
     },
   },
   plugins: [],

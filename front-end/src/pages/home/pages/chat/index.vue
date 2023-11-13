@@ -1,7 +1,7 @@
 <script setup>
 import { useChat } from "@/composables/chatComposable";
-import { defineAsyncComponent, onMounted, ref } from "vue";
 import { useEvent } from "@/composables/eventsComposable";
+import { defineAsyncComponent, onMounted, ref } from "vue";
 
 const Modal = defineAsyncComponent(() =>
   import("@/components/Modal/index.vue")
@@ -16,19 +16,20 @@ const SearchBox = defineAsyncComponent(() =>
 const UserCarousel = defineAsyncComponent(() =>
   import("../../components/UserCarousel/index.vue")
 );
-const UserChat = defineAsyncComponent(() =>
-  import("../../components/UserChat/index.vue")
+
+const Room = defineAsyncComponent(() =>
+  import("../../components/Room/index.vue")
 );
 
 const {
+  rooms,
+  fetchRoom,
   search,
   users,
-  chatStore,
-  userStore,
   handleOnSearch,
   handleOnChat,
   handleFindByEmailUsers,
-  chatService,
+  handleCreateRoom,
 } = useChat();
 
 const { modal, positionY, getVerticalPosition } = useEvent();
@@ -66,22 +67,10 @@ const userCarousel = ref([
   },
 ]);
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchRoom();
   getVerticalPosition("chat-list");
 });
-
-const handleCreateRoom = async ({ id }) => {
-  try {
-    const res = await chatService.createRoom({
-      type: "people",
-      to: id,
-    });
-    chatStore.addChat(res.data);
-    modal.value = false;
-  } catch (error) {
-    console.log(error);
-  }
-};
 </script>
 
 <template>
@@ -104,23 +93,17 @@ const handleCreateRoom = async ({ id }) => {
       <h5 class="px-4 mb-3 text-[16px] font-semibold">Recent</h5>
       <div class="relative group h-[calc(100vh_-_280px)]">
         <div id="chat-list" class="absolute p-0 m-0 top-0 bottom-0 w-full">
-          <UserChat
-            v-for="chat in chatStore.getChats"
-            :key="chat.id"
-            @click="handleOnChat(chat)"
-            :class="{ active: chat.active }"
-            :user="
-              chat.type == 'people'
-                ? chat.members.find((member) => member.id !== userStore.user.id)
-                : null
-            "
-            :message="chat.messages[chat.messages.length - 1]"
-            :size-avatar="40"
-            :unread="chat.unread"
+          <Room
+            v-for="room in rooms"
+            :key="room.id"
+            :room="room"
+            @click="handleOnChat(room)"
+            :class="{ active: room.active }"
           />
         </div>
+        <!-- Scroll -->
         <div
-          v-if="chatStore.getChats.length >= 6"
+          v-if="rooms && rooms.length >= 6"
           class="absolute opacity-0 group-hover:opacity-100 top-0 right-0 bottom-0 w-[11px] transition-opacity duration-[0.4s] ease-linear"
         >
           <div
