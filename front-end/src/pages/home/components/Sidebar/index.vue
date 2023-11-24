@@ -1,7 +1,7 @@
 <script setup>
 import { defineAsyncComponent, reactive, ref } from "vue";
 import { useUserStore } from "@/stores/userStore";
-import { useChatStore } from "@/stores/ChatStore";
+import { useChatStore } from "@/stores/chatStore";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 
 const userStore = useUserStore();
