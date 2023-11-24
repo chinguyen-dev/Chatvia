@@ -19,10 +19,12 @@ export const useChat = () => {
   const handleOnSearch = (payload) => console.log(payload);
   const fetchRoom = async () => {
     try {
+      chatStore.setLoading(true);
       const response = await chatService.getRooms();
       chatStore.setState({
         rooms: response.data,
       });
+      setTimeout(() => chatStore.setLoading(false), 700);
     } catch (error) {
       console.log("Server error: ", error);
     }

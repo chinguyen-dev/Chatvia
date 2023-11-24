@@ -5,6 +5,7 @@ export const useChatStore = defineStore("chat", {
   state: () => ({
     rooms: [],
     room: null,
+    isLoading: false,
     typing: false,
   }),
   getters: {
@@ -35,14 +36,16 @@ export const useChatStore = defineStore("chat", {
       });
       return count;
     },
-    loading: ({ rooms }) => false,
+    loading: ({ isLoading }) => isLoading,
   },
   actions: {
-    setState({ rooms, room, isLoading, typing }) {
+    setState({ rooms, room, typing }) {
       if (rooms) this.rooms = rooms;
       if (room) this.room = room;
-      if (isLoading) this.isLoading = isLoading;
       this.typing = typing && typing;
+    },
+    setLoading(isLoading) {
+      this.isLoading = isLoading;
     },
     async readMessage(payload) {
       try {
@@ -59,7 +62,6 @@ export const useChatStore = defineStore("chat", {
         console.log("Error updating read message");
       }
     },
-
     async createRoom({ type, user }) {
       const userStore = useUserStore();
       if (type === "people") {
