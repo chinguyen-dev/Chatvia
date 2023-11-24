@@ -36,36 +36,24 @@ const { modal, positionY, getVerticalPosition } = useEvent();
 
 const userCarousel = ref([
   {
-    name: "Võ Chí Nguyên",
-    avatar: "",
+    name: "PatricBLinkk",
+    avatar: "./src/assets/images/avatar-PatricBLinkk.jpg",
   },
   {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
+    name: "Doris",
+    avatar: "./src/assets/images/avatar-Doris.jpg",
   },
   {
-    name: "Võ Chí Nguyên",
-    avatar: "",
+    name: "Emily",
+    avatar: "./src/assets/images/avatar-Emily.jpg",
   },
   {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
+    name: "Steve",
+    avatar: "./src/assets/images/avatar-Steve.jpg",
   },
   {
-    name: "Võ Chí Nguyên",
-    avatar: "",
-  },
-  {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
-  },
-  {
-    name: "Võ Chí Nguyên",
-    avatar: "",
-  },
-  {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
+    name: "Teresa",
+    avatar: "./src/assets/images/avatar-Teresa.jpg",
   },
 ]);
 
