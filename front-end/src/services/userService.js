@@ -1,20 +1,11 @@
 import axiosClient from "./axiosClient";
-const baseURL = import.meta.env.VITE_BASE_URL;
+const baseURL = `${import.meta.env.VITE_BASE_URL}/api/v1`;
 const userService = {
-  login: (credentials) => {
-    return axiosClient.post(`${baseURL}/api/v1/login`, credentials);
-  },
-  logout: () => {
-    return axiosClient.post(`${baseURL}/api/v1/logout`);
-  },
-  getUser: () => {
-    return axiosClient.get(`${baseURL}/api/v1/profile`);
-  },
-  register: (data) => {
-    return axiosClient.post(`${baseURL}/api/v1/register`, data);
-  },
+  login: (credentials) => axiosClient.post(`${baseURL}/login`, credentials),
+  logout: () => axiosClient.post(`${baseURL}/logout`),
+  register: (data) => axiosClient.post(`${baseURL}/register`, data),
   findByEmailContaining: (email) => {
-    return axiosClient.get(`${baseURL}/api/v1/user/${email}`);
+    return axiosClient.get(`${baseURL}/users/like/${email}`);
   },
 };
 export default userService;

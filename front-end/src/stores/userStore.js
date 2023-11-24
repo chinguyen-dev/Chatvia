@@ -7,29 +7,24 @@ export const useUserStore = defineStore("user", {
     user:
       JSON.parse(localStorage.getItem(import.meta.env.VITE_STORAGE_USER)) ||
       null,
-    token: localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN) || "",
   }),
   getters: {},
   actions: {
     setState(payload) {
-      const { user, token } = payload;
-      this.user = user;
-      this.token = token;
+      this.user = payload;
     },
 
     async login(credentials) {
       try {
-        const auth = await userService.login(credentials);
-        localStorage.setItem(import.meta.env.VITE_STORAGE_TOKEN, auth.data);
-        const user = await userService.getUser();
+        this.user = await userService.login(credentials);
+        localStorage.setItem(
+          import.meta.env.VITE_STORAGE_TOKEN,
+          this.user.access_token
+        );
         localStorage.setItem(
           import.meta.env.VITE_STORAGE_USER,
-          JSON.stringify(user.data)
+          JSON.stringify(this.user)
         );
-        this.setState({
-          token: auth.data,
-          user: user.data,
-        });
       } catch (error) {
         localStorage.clear();
         toast.error("Đăng nhập thất bại.");

@@ -17,58 +17,34 @@ export const useChat = () => {
   const { findSenderById } = useCommon();
 
   const handleOnSearch = (payload) => console.log(payload);
-
   const fetchRoom = async () => {
     try {
-      const response = await chatService.getConversations();
+      const response = await chatService.getRooms();
       chatStore.setState({
-        chatList: response.data,
+        rooms: response.data,
       });
     } catch (error) {
       console.log("Server error: ", error);
     }
   };
-
   const handleOnChat = async (room) => {
-    if (room.unread > 0) {
-      let payload = {
-        conversation_id: room.chat_id,
+    if (room.unread > 0 && room?.room_type === "people") {
+      await chatStore.readMessage({
+        room_id: room.room_id,
         seen: true,
-      };
-      if (room?.type === "people") {
-        const { id } = findSenderById(room);
-        payload = {
-          ...payload,
-          sender_id: id,
-        };
-      } else {
-        // update read message for room
-      }
-      await chatStore.readMessage(payload);
+      });
     } else {
       chatStore.setState({
-        chat: room,
+        room,
       });
     }
   };
-
-  const handleCreateRoom = async ({ id }) => {
-    await chatStore.createRoom({
+  const handleCreateRoom = (user) => {
+    chatStore.createRoom({
       type: "people",
-      to: id,
+      user,
     });
-    modal.value = false;
   };
-
-  const handleSendMessage = async (payload) => {
-    try {
-      const res = await chatService.sendMessage(payload);
-      chatStore.chat.messages.push(res.data);
-    } catch (error) {
-      console.log("error sending message");
-    }
-  };
-
   const handleFindByEmailUsers = async () => {
     if (search.email === "") return;
     if (search.typingTimeOut) clearTimeout(search.typingTimeOut);
@@ -81,30 +57,12 @@ export const useChat = () => {
       }
     }, 300);
   };
-
-  const handleReceiveMsg = async ({ conversation_id, message }) => {
-    if (chatStore.chat?.chat_id === conversation_id) {
-      await chatStore.readMessage({
-        conversation_id,
-        sender_id: message.sender.id,
-        seen: true,
-      });
-    } else {
-      chatStore.chatList.map(
-        (room) =>
-          room.chat_id === conversation_id && room.messages.push(message)
-      );
-    }
-  };
-
-  const handleUserTyping = ({ type, user, roomId }) => {
-    if (chatStore.chat?.chat_id === roomId) {
+  const handleTyping = ({ type, user, roomId }) => {
+    if (chatStore.room?.room_id === roomId) {
       chatStore.setState({
         typing: true,
       });
-      if (typingTimeOut.value) {
-        clearTimeout(typingTimeOut.value);
-      }
+      if (typingTimeOut.value) clearTimeout(typingTimeOut.value);
       typingTimeOut.value = setTimeout(() => {
         chatStore.setState({
           typing: false,
@@ -113,20 +71,41 @@ export const useChat = () => {
     }
   };
 
+  const handleSendChat = async (payload) => {
+    try {
+      const response = await chatService.sendChat(payload);
+      chatStore.room.messages.push(response.data);
+    } catch (error) {
+      console.log("error sending message");
+    }
+  };
+
+  const handleNewMsg = async ({ room_id, message }) => {
+    if (chatStore.room?.room_id === room_id) {
+      await chatStore.readMessage({
+        room_id,
+        seen: true,
+      });
+    } else {
+      chatStore.rooms?.map(
+        (room) => room.room_id === room_id && room.messages.push(message)
+      );
+    }
+  };
+
   return {
     search,
     users,
-    chatService,
     fetchRoom,
-    handleReceiveMsg,
+    handleNewMsg,
     handleOnChat,
     handleOnSearch,
-    handleUserTyping,
+    handleTyping,
     handleCreateRoom,
-    handleSendMessage,
+    handleSendChat,
     handleFindByEmailUsers,
-    rooms: computed(() => chatStore.getChats),
-    currentRoom: computed(() => chatStore.chat),
+    rooms: computed(() => chatStore.getRooms),
+    currentRoom: computed(() => chatStore.room),
     loading: computed(() => chatStore.loading),
     typing: computed(() => chatStore.typing),
   };

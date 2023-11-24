@@ -95,10 +95,10 @@ onMounted(async () => {
         <div id="chat-list" class="absolute p-0 m-0 top-0 bottom-0 w-full">
           <Room
             v-for="room in rooms"
-            :key="room.id"
+            :key="room.room_id"
             :room="room"
+            :class="room.active && 'active'"
             @click="handleOnChat(room)"
-            :class="{ active: room.active }"
           />
         </div>
         <!-- Scroll -->
@@ -168,7 +168,12 @@ onMounted(async () => {
                 <div class="text-xl mr-5">
                   <button
                     type="button"
-                    @click="handleCreateRoom(user)"
+                    @click="
+                      () => {
+                        modal = false;
+                        handleCreateRoom(user);
+                      }
+                    "
                     class="h-6 hover:text-[#7269ef] rounded-[4px] m-2 font-medium"
                     title="Trò chuyện"
                   >

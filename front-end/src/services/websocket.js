@@ -1,20 +1,18 @@
 import axiosClient from "./axiosClient";
-import { useUserStore } from "@/stores/userStore";
 import Echo from "laravel-echo";
 
 const baseURL = import.meta.env.VITE_BASE_URL;
+let echo = null;
 
 const websocketService = {
-  connection() {
+  connect: () => {
     if (!localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN)) return;
-    return new Echo({
+    echo = new Echo({
       broadcaster: "pusher",
-      key: import.meta.env.VITE_APP_WEBSOCKETS_KEY,
-      wsHost: import.meta.env.VITE_APP_WEBSOCKETS_SERVER,
-      wsPort: import.meta.env.VITE_APP_WEBSOCKETS_PORT,
-      cluster: import.meta.env.VITE_APP_WEBSOCKETS_CLUSTER,
-      forceTLS: false,
-      disableStats: true,
+      key: import.meta.env.VITE_PUSHER_APP_KEY,
+      cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+      forceTLS: true,
+      encrypted: true,
       authorizer: (channel, options) => {
         return {
           authorize: async (socketId, callback) => {
@@ -22,10 +20,6 @@ const websocketService = {
               const response = await axiosClient.post(
                 `${baseURL}/api/broadcasting/auth`,
                 { socket_id: socketId, channel_name: channel.name }
-              );
-              localStorage.setItem(
-                import.meta.env.VITE_STORAGE_SOCKET_ID,
-                socketId
               );
               callback(false, response);
             } catch (error) {
@@ -37,13 +31,38 @@ const websocketService = {
       },
     });
   },
-  subscribe() {
-    const socket = this.connection();
-    window.Echo = socket;
-    return new Promise(function (resolve, reject) {
-      resolve(socket);
+  subscribe: ({ channelName, type }, callback) => {
+    if (!echo) return;
+    let channel;
+    switch (type.toUpperCase()) {
+      case "PUBLIC":
+        break;
+      case "PRIVATE":
+        channel = echo.private(channelName);
+        break;
+      case "PRESENCE":
+        break;
+      default:
+        console.error("unknown type");
+        break;
+    }
+    return callback({
+      channel,
+      typing: echo.private("Typing"),
     });
   },
+  getSocketId: () => {
+    if (!echo) return;
+    return new Promise((resolve) => {
+      echo.connector.pusher.connection.bind("connected", () =>
+        resolve(echo.socketId())
+      );
+    });
+  },
+  typing: (data) =>
+    echo &&
+    setTimeout(() => echo.private("Typing").whisper("typing", data), 300),
+  unSubscribe: () => (echo = null),
 };
 
 export default websocketService;
