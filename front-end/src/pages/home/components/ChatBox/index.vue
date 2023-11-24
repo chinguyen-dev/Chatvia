@@ -1,25 +1,26 @@
 <script setup>
+import { useCommon } from "@/composables/commonComposable";
 import { useEmoji } from "@/composables/emojiComposable";
 import { useEvent } from "@/composables/eventsComposable";
-import { useCommon } from "@/composables/commonComposable";
 import { useUserStore } from "@/stores/userStore";
-import { useChatStore } from "@/stores/chatStore";
+import websocketService from "@/services/websocket";
 import { defineAsyncComponent, onMounted, onUpdated } from "vue";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import "vue3-emoji-picker/css";
 
 const Avatar = defineAsyncComponent(() => import("../Avatar/index.vue"));
 const EmojiPicker = defineAsyncComponent(() => import("vue3-emoji-picker"));
 const SlideShow = defineAsyncComponent(() => import("../SlideShow/index.vue"));
 const Typing = defineAsyncComponent(() => import("../Typing/index.vue"));
+const Dropdown = defineAsyncComponent(() =>
+  import("@/components/Dropdown/index.vue")
+);
 
 const userStore = useUserStore();
-const chatStore = useChatStore();
 const { toggleEmoji, scrollHeight } = useEvent();
 const { findSenderById, convertName } = useCommon();
 const { handleToggleEmoji, emoji, input, onSelectEmoji } = useEmoji();
 
-const { onsubmit, onscroll } = defineProps({
+const { onsubmit, onscroll, typing } = defineProps({
   onsubmit: {
     type: Function,
     default: null,
@@ -28,22 +29,23 @@ const { onsubmit, onscroll } = defineProps({
     type: Object,
     default: null,
   },
+  typing: Boolean,
 });
 
 const handleOnSubmit = (room) => {
   if (!onsubmit || !room) return;
   const payload = {
-    conversation_id: room?.chat_id,
-    receiver_id: room.type == "people" ? findSenderById(room)?.id : null,
-    content: input.value,
+    type: room?.room_type,
+    to: room.room_type == "people" ? findSenderById(room)?.id : null,
+    msg: input.value,
   };
   onsubmit(payload);
   input.value = "";
 };
 
-const senderOrGroup = (chat) => {
-  return chat?.type === "people"
-    ? chat.members.find((member) => member.id !== userStore.user.id)
+const senderOrGroup = (room) => {
+  return room?.room_type === "people"
+    ? room.members.find((member) => member.id !== userStore.user.id)
     : {
         name: "Group chat",
         avatar:
@@ -51,19 +53,32 @@ const senderOrGroup = (chat) => {
       };
 };
 
-const typingEvent = (chat) => {
-  const user = chat?.members.find((member) => member.id !== userStore.user.id);
-  window.Echo.private(`user.${user.id}`).whisper("typing", {
-    type: chat?.type,
-    user,
-    roomId: chat?.chat_id,
-  });
+const typingEvent = (room) => {
+  if (room?.room_type === "people") {
+    const { room_id, room_type } = room;
+    const receiver = room?.members.find(
+      (member) => member.id !== userStore.user?.id
+    );
+    websocketService.typing({
+      roomId: room_id,
+      type: room_type,
+      user: receiver,
+    });
+  } else {
+    // Typing room
+  }
 };
 
 const checkPositionMessage = (message) => {
   return message.sender?.id == userStore.user.id
     ? "right flex justify-end"
     : "flex";
+};
+
+const checkPositionDropdown = (message) => {
+  return message.sender?.id !== userStore.user.id
+    ? "left-2 origin-top-left"
+    : "right-2 origin-top-right";
 };
 
 onMounted(() => {
@@ -90,15 +105,13 @@ onUpdated(() => scrollHeight(".scrollbar"));
       </div>
       <!-- Body -->
       <div class="relative h-[calc(100vh_-_178px)]">
-        <div
-          class="scrollbar absolute m-0 top-0 right-0 left-0 bottom-0 p-6 overflow-x-auto"
-        >
+        <div class="scrollbar absolute m-0 top-0 right-0 left-0 bottom-0 p-6">
           <div
             :key="message.id"
             v-for="message in room?.messages"
             :class="checkPositionMessage(message)"
           >
-            <div class="message flex items-end mb-6">
+            <div class="message flex items-end mb-7">
               <Avatar
                 class="me-3"
                 :user="
@@ -117,50 +130,41 @@ onUpdated(() => scrollHeight(".scrollbar"));
                       <i class="ri-time-line"></i> {{ message.created_at }}
                     </p>
                   </div>
-                  <Menu as="div" class="relative inline-block">
-                    <MenuButton class="p-1 text-lg text-[#7a7f9a]">
+                  <Dropdown :position="checkPositionDropdown(message)">
+                    <template #button>
                       <i class="ri-more-2-fill"></i>
-                    </MenuButton>
-                    <transition
-                      enter-active-class="transition ease-out duration-100"
-                      enter-from-class="transform opacity-0 scale-95"
-                      enter-to-class="transform opacity-100 scale-100"
-                      leave-active-class="transition ease-in duration-75"
-                      leave-from-class="transform opacity-100 scale-100"
-                      leave-to-class="transform opacity-0 scale-95"
-                    >
-                      <MenuItems
-                        class="absolute left-0 z-10 mt-2 w-[150px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                      >
-                        <div class="py-1">
-                          <MenuItem>
-                            <a
-                              href="#"
-                              class="block px-4 py-2 text-sm hover:bg-gray-100"
-                              ><i class="ri-reply-line mr-2"></i>
-                              <span>Trả lời</span></a
-                            >
-                          </MenuItem>
-                          <MenuItem>
-                            <a
-                              href="#"
-                              class="block px-4 py-2 text-sm hover:bg-gray-100"
-                              ><i class="ri-edit-2-line mr-2"></i
-                              ><span>Chỉnh sửa</span></a
-                            >
-                          </MenuItem>
-                          <MenuItem>
-                            <a
-                              href="#"
-                              class="block border-t px-4 py-2 text-red-600 text-sm hover:bg-gray-100"
-                              ><i class="ri-delete-bin-5-line mr-2"></i>
-                              <span>Xóa</span>
-                            </a>
-                          </MenuItem>
-                        </div>
-                      </MenuItems>
-                    </transition>
-                  </Menu>
+                    </template>
+
+                    <template #body="{ menuItem }">
+                      <component :is="menuItem">
+                        <button
+                          type="button"
+                          class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        >
+                          <i class="ri-reply-line mr-2"></i>
+                          <span>Trả lời</span>
+                        </button>
+                      </component>
+                      <component :is="menuItem">
+                        <button
+                          type="button"
+                          class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        >
+                          <i class="ri-edit-2-line mr-2"></i
+                          ><span>Chỉnh sửa</span>
+                        </button>
+                      </component>
+                      <component :is="menuItem">
+                        <button
+                          type="button"
+                          class="block w-full text-left border-t px-4 py-2 text-red-600 text-sm hover:bg-gray-100"
+                        >
+                          <i class="ri-delete-bin-5-line mr-2"></i>
+                          <span>Xóa</span>
+                        </button>
+                      </component>
+                    </template>
+                  </Dropdown>
                 </div>
                 <div class="name text-sm font-medium">
                   {{
@@ -173,7 +177,7 @@ onUpdated(() => scrollHeight(".scrollbar"));
             </div>
           </div>
         </div>
-        <div class="absolute bottom-0 left-0" v-if="chatStore.typing">
+        <div class="absolute bottom-0 left-0" v-if="typing">
           <Typing />
         </div>
       </div>
@@ -230,6 +234,8 @@ onUpdated(() => scrollHeight(".scrollbar"));
 
 <style lang="scss" scoped>
 .scrollbar {
+  overflow: hidden scroll;
+
   &::-webkit-scrollbar {
     width: 7px;
   }

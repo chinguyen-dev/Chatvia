@@ -3,19 +3,20 @@ import chatService from "@/services/chatService";
 import { useUserStore } from "@/stores/userStore";
 export const useChatStore = defineStore("chat", {
   state: () => ({
-    chatList: [],
-    chat: null,
+    rooms: [],
+    room: null,
     typing: false,
   }),
   getters: {
-    getChats: ({ chatList, chat }) => {
+    getRooms: ({ rooms, room }) => {
       const userStore = useUserStore();
-      return chatList
-        ?.map((conversation) => {
+      const roomCurrent = room;
+      return rooms
+        ?.map((room) => {
           return {
-            ...conversation,
-            active: conversation.chat_id === chat?.chat_id,
-            unread: conversation.messages.filter(
+            ...room,
+            active: room.room_id === roomCurrent?.room_id,
+            unread: room.messages.filter(
               (message) =>
                 !message.unread && message.sender?.id !== userStore.user?.id
             ).length,
@@ -23,54 +24,56 @@ export const useChatStore = defineStore("chat", {
         })
         .sort((a, b) => (a.active === b.active ? 0 : a.active ? -1 : 1));
     },
-    countAllUnreadMessages: ({ chatList }) => {
+    countAllUnreadMessages: ({ rooms }) => {
       let count = 0;
       const userStore = useUserStore();
-      chatList?.map((chat) => {
-        count += chat.messages.filter(
+      rooms?.map((room) => {
+        count += room.messages.filter(
           (message) =>
             !message.unread && message.sender?.id !== userStore.user?.id
         ).length;
       });
       return count;
     },
-    loading: ({ chatList }) => chatList.length === 0,
+    loading: ({ rooms }) => false,
   },
   actions: {
-    setState({ chatList, chat, isLoading, typing }) {
-      if (chatList) this.chatList = chatList;
-      if (chat) this.chat = chat;
+    setState({ rooms, room, isLoading, typing }) {
+      if (rooms) this.rooms = rooms;
+      if (room) this.room = room;
       if (isLoading) this.isLoading = isLoading;
       this.typing = typing && typing;
     },
     async readMessage(payload) {
       try {
-        const res = await chatService.updateReadMessage(payload);
-        const { chat_id } = res.data;
+        const response = await chatService.readMsg(payload);
+        const { room_id } = response.data;
         this.setState({
-          chatList: this.chatList.map((chat) => {
-            if (chat.chat_id === chat_id) chat = res.data;
-            return chat;
+          rooms: this.rooms.map((room) => {
+            if (room?.room_id === room_id) room = response.data;
+            return room;
           }),
-          chat: res.data,
+          room: response.data,
         });
       } catch (error) {
-        console.log("Error updating");
+        console.log("Error updating read message");
       }
     },
 
-    async createRoom(payload) {
-      try {
-        const response = await chatService.createRoom(payload);
-        const chat = response.data;
-        const isContains = this.chatList.some(
-          (chat) => chat.chat_id === response.data?.chat_id
-        );
-        if (!isContains) this.chatList.push(chat);
-        this.chat = chat;
-      } catch (error) {
-        console.error("Error: ", error);
+    async createRoom({ type, user }) {
+      const userStore = useUserStore();
+      if (type === "people") {
+        this.room = {
+          room_id: 0,
+          room_name: null,
+          room_type: "people",
+          creator_id: userStore.user.id,
+          members: [{ ...user }, { ...userStore.user }],
+          messages: [],
+        };
+      } else {
       }
+      this.rooms.push(this.room);
     },
   },
 });

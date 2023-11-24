@@ -12,11 +12,12 @@ const userStore = useUserStore();
 const componentCurrent = ref("chat");
 const { handleLogout } = useAuth();
 const {
+  typing,
   loading,
   currentRoom,
-  handleUserTyping,
-  handleSendMessage,
-  handleReceiveMsg,
+  handleTyping,
+  handleSendChat,
+  handleNewMsg,
 } = useChat();
 
 const ChatBox = defineAsyncComponent(() =>
@@ -45,31 +46,23 @@ const Component = computed(() => {
 });
 
 onMounted(() => {
-  websocketService
-    .subscribe()
-    .then(function (socket) {
-      const userPriChannel = socket.private(`user.${userStore.user?.id}`);
-      return {
-        userPriChannel,
-      };
-    })
-    .then(function ({ userPriChannel }) {
-      userPriChannel
-        .listen(".NEW-MESSAGE", async (response) => {
-          handleReceiveMsg(response);
-        })
-        .listenForWhisper("typing", (response) => handleUserTyping(response));
-    });
+  websocketService.connect();
+  websocketService.subscribe(
+    { channelName: `User.${userStore.user?.id}`, type: "private" },
+    ({ channel, typing }) => {
+      channel.listen(".ON-CHAT", async (response) => handleNewMsg(response));
+      typing.listenForWhisper("typing", (response) => handleTyping(response));
+    }
+  );
 });
 </script>
 
 <template>
-  <div class="wrapper flex">
+  <div id="home" class="flex">
     <Sidebar
       :onsubmit="handleLogout"
       :on-click="(componentName) => (componentCurrent = componentName)"
     />
-
     <div class="min-w-[380px] max-w-[380px] h-screen bg-[#f5f7fb] me-1">
       <div class="tab-content">
         <keep-alive>
@@ -77,9 +70,7 @@ onMounted(() => {
         </keep-alive>
       </div>
     </div>
-
-    <ChatBox :room="currentRoom" :onsubmit="handleSendMessage" />
-
+    <ChatBox :room="currentRoom" :onsubmit="handleSendChat" :typing="typing" />
     <Loading v-if="loading" />
   </div>
 </template>

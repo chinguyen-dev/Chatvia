@@ -1,4 +1,6 @@
 import axios from "axios";
+import websocketService from "./websocket";
+
 // Set config defaults when creating the instance
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -14,8 +16,12 @@ axiosClient.interceptors.request.use(
     const token = localStorage.getItem(import.meta.env.VITE_STORAGE_TOKEN);
     if (token) {
       config.headers["Authorization"] = "Bearer " + token;
-      config.headers["X-Socket-ID"] =
-        localStorage.getItem(import.meta.env.VITE_STORAGE_SOCKET_ID) || "";
+      // websocketService
+      //   .getSocketId()
+      //   .then((socketId) => {
+      //     config.headers["X-Socket-ID"] = socketId;
+      //   })
+      //   .catch((callback) => callback());
     }
     // Do something before request is sent
     return config;

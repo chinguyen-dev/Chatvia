@@ -1,21 +1,11 @@
 import axiosClient from "./axiosClient";
-const baseURL = import.meta.env.VITE_BASE_URL;
+const baseURL = `${import.meta.env.VITE_BASE_URL}/api/v1/chats`;
 const chatService = {
-  getConversations: () => {
-    return axiosClient.get(`${baseURL}/api/v1/chat`);
-  },
-  getConversationById: (id) => {
-    return axiosClient.get(`${baseURL}/api/v1/chat/${id}`);
-  },
-  sendMessage: (payload) => {
-    return axiosClient.post(`${baseURL}/api/v1/message`, payload);
-  },
-  updateReadMessage: (payload) => {
-    return axiosClient.put(`${baseURL}/api/v1/message/seen`, payload);
-  },
-  createRoom: (payload) => {
-    return axiosClient.post(`${baseURL}/api/v1/chat`, payload);
-  },
+  getRooms: () => axiosClient.get(baseURL),
+  getRoomById: (id) => axiosClient.get(`${baseURL}/${id}`),
+  createRoom: (payload) => axiosClient.post(baseURL, payload),
+  sendChat: (payload) => axiosClient.post(`${baseURL}/sendChat`, payload),
+  readMsg: (payload) => axiosClient.post(`${baseURL}/readMsg`, payload),
 };
 
 export default chatService;
