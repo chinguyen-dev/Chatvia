@@ -37,33 +37,35 @@ const { modal, positionY, getVerticalPosition } = useEvent();
 const userCarousel = ref([
   {
     name: "Võ Chí Nguyên",
-    avatar:
-      "http://chatvia-light.vue.themesbrand.com/img/avatar-5.3e35c39b.jpg",
+    avatar: "",
+  },
+  {
+    name: "Cao Thị Trúc Linh",
+    avatar: "",
   },
   {
     name: "Võ Chí Nguyên",
-    avatar:
-      "http://chatvia-light.vue.themesbrand.com/img/avatar-5.3e35c39b.jpg",
+    avatar: "",
+  },
+  {
+    name: "Cao Thị Trúc Linh",
+    avatar: "",
   },
   {
     name: "Võ Chí Nguyên",
-    avatar:
-      "http://chatvia-light.vue.themesbrand.com/img/avatar-5.3e35c39b.jpg",
+    avatar: "",
+  },
+  {
+    name: "Cao Thị Trúc Linh",
+    avatar: "",
   },
   {
     name: "Võ Chí Nguyên",
-    avatar:
-      "http://chatvia-light.vue.themesbrand.com/img/avatar-5.3e35c39b.jpg",
+    avatar: "",
   },
   {
-    name: "Võ Chí Nguyên",
-    avatar:
-      "http://chatvia-light.vue.themesbrand.com/img/avatar-6.11d7dc68.jpg",
-  },
-  {
-    name: "Võ Chí Nguyên",
-    avatar:
-      "http://chatvia-light.vue.themesbrand.com/img/avatar-6.11d7dc68.jpg",
+    name: "Cao Thị Trúc Linh",
+    avatar: "",
   },
 ]);
 

@@ -13,7 +13,6 @@ const Badge = defineAsyncComponent(() =>
 );
 
 const sidebar = reactive({
-  logo: "http://chatvia-light.vue.themesbrand.com/img/logo.de6401ef.svg",
   items: [
     {
       name: "profile",
@@ -71,7 +70,7 @@ const handleOnClick = (tabName) => {
     class="flex flex-col mr-1 min-w-[75px] max-w-[75px] h-screen min-h-[570px] bg-white z-[9] shadow-3xl"
   >
     <router-link to="/chat" class="flex justify-center items-center h-[70px]">
-      <img class="h-[30px]" alt="avatar" :src="sidebar.logo" />
+      <img class="h-[30px]" alt="avatar" src="@/assets/images/logo.svg" />
     </router-link>
     <div class="my-auto">
       <ul class="flex flex-wrap justify-center">
