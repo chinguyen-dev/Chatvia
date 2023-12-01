@@ -1,5 +1,5 @@
 <script setup>
-import { useEvent, useChat } from "@/composables";
+import { useEvent, useChat, useContact } from "@/composables";
 import { defineAsyncComponent, onMounted, ref } from "vue";
 
 const UserCarousel = defineAsyncComponent(() =>
@@ -24,6 +24,8 @@ const {
   handleFindByEmailUsers,
   handleCreateRoom,
 } = useChat();
+
+const { handleCreateContact } = useContact();
 
 const { modal, positionY, getVerticalPosition } = useEvent();
 
@@ -176,6 +178,12 @@ onMounted(async () => {
                     <i class="ri-message-3-line"></i>
                   </button>
                   <button
+                    @click="
+                      () => {
+                        modal = false;
+                        handleCreateContact(user);
+                      }
+                    "
                     type="button"
                     class="h-6 hover:text-[#7269ef] rounded-[4px] m-2 font-medium"
                     title="Kết bạn"

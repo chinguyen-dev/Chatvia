@@ -1,7 +1,7 @@
 <script setup>
 import websocketService from "@/services/websocket";
 import { computed, defineAsyncComponent, onMounted, ref } from "vue";
-import { useAuth, useChat } from "@/composables";
+import { useAuth, useChat, useContact } from "@/composables";
 import { useUserStore } from "@/stores";
 import { useRouter } from "vue-router";
 
@@ -34,6 +34,7 @@ const {
   handleSendChat,
   handleNewMsg,
 } = useChat();
+const { setContactStore } = useContact();
 
 const Component = computed(() => {
   let component;
@@ -59,7 +60,10 @@ onMounted(() => {
   websocketService.subscribe(
     { channelName: `User.${userStore.user?.id}`, type: "private" },
     ({ channel, typing }) => {
-      channel.listen(".ON-CHAT", async (response) => handleNewMsg(response));
+      channel
+        .listen(".ON-CHAT", async (response) => handleNewMsg(response))
+        .listen(".NEW-CONTACT", (response) => setContactStore(response))
+        .listen(".REVOKE-INVITATION", (response) => console.log(response));
       typing.listenForWhisper("typing", (response) => handleTyping(response));
     }
   );

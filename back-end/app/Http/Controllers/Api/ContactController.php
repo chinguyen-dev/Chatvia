@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\NotifyNewContact;
+use App\Events\NotifyRevokeInvitation;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ContactResource;
 use App\Models\Contact;
@@ -31,6 +32,7 @@ class ContactController extends Controller
         $request->validate([
             'contacted_id' => 'required',
         ]);
+
         $userAuth = auth()->user();
         $contacted_id = (int)$request->input('contacted_id');
         $user = User::find($contacted_id);
@@ -62,9 +64,16 @@ class ContactController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws ValidationException
      */
-    public function destroy(Contact $contact)
+    public function destroy(Contact $contact): JsonResponse
     {
-        //
+        $contact = $contact->first();
+        if ($contact->user_id != auth()->id()) throw ValidationException::withMessages(['error' => 'Delete contact failed']);
+        $contact->delete();
+        broadcast(new NotifyRevokeInvitation($contact))->toOthers();
+        return response()->json([
+            'message' => 'delete contact successfully'
+        ]);
     }
 }

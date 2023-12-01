@@ -56,8 +56,9 @@ const useContactStore = defineStore("contact", {
     },
   },
   actions: {
-    setState({ tabs, tab }) {
+    setState({ tabs, tab, contact }) {
       if (tab) this.currentTab = tab;
+      if (contact) this.data.push(contact);
     },
     async getContacts() {
       try {
