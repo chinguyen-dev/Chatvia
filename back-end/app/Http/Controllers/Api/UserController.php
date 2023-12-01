@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MemberResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -52,10 +54,10 @@ class UserController extends Controller
 
     public function findByEmail(string $email): AnonymousResourceCollection
     {
-        return MemberResource::collection(
-            User::where('email', 'LIKE', "%{$email}%")
-                ->where('id', '<>', auth()->id())
-                ->get()
-        );
+        $users = User::where('email', 'LIKE', "%{$email}%")
+            ->where('id', '<>', auth()->id())
+            ->get();
+        return MemberResource::collection($users);
     }
+
 }

@@ -1,11 +1,11 @@
 import chatService from "@/services/chatService";
 import userService from "@/services/userService";
 
-import { useChatStore } from "@/stores/chatStore";
+import { useChatStore } from "@/stores";
 import { computed, reactive, ref } from "vue";
-import { useCommon } from "./commonComposable";
+import { useCommon } from "@/composables";
 
-export const useChat = () => {
+const useChat = () => {
   const chatStore = useChatStore();
   const search = reactive({
     email: "",
@@ -40,10 +40,15 @@ export const useChat = () => {
     }
   };
   const handleCreateRoom = (user) => {
-    chatStore.createRoom({
-      type: "people",
-      user,
-    });
+    if (
+      !chatStore.room ||
+      !chatStore.room?.members.find((member) => member.id === user.id)
+    ) {
+      chatStore.createRoom({
+        type: "people",
+        user,
+      });
+    }
   };
   const handleFindByEmailUsers = async () => {
     if (search.email === "") return;
@@ -110,3 +115,5 @@ export const useChat = () => {
     typing: computed(() => chatStore.typing),
   };
 };
+
+export default useChat;

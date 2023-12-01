@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('contacter_id');
+            $table->unsignedBigInteger('contacted_id');
             $table->string('status', 50)->default('waiting');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('contacter_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreign('contacted_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 

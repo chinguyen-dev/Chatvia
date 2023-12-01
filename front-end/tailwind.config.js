@@ -6,6 +6,7 @@ export default {
       colors: {
         gray87: "#878a92",
         gray49: "#495057",
+        gray08: "#081c36",
         muted: "#7a7f9a",
         primary: "#7269ef",
       },

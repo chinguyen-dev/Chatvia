@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AuthResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,27 +12,33 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    /**
+     * @throws ValidationException
+     */
+    public function login(Request $request): AuthResource
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->input('email'))->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
 
         $token = $user->createToken($user)->plainTextToken;
-
-        return $user->setAttribute('access_token', $token);
+        $user->setAttribute('access_token', $token);
+        return new AuthResource($user);
     }
 
-    public function register(Request $request)
+    /**
+     * @throws ValidationException
+     */
+    public function register(Request $request): JsonResponse
     {
         $request->validate([
             'username' => 'required',

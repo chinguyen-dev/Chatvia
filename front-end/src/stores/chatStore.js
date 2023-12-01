@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import chatService from "@/services/chatService";
-import { useUserStore } from "@/stores/userStore";
-export const useChatStore = defineStore("chat", {
+import { useUserStore } from "@/stores";
+const useChatStore = defineStore("chat", {
   state: () => ({
     rooms: [],
     room: null,
@@ -77,3 +77,5 @@ export const useChatStore = defineStore("chat", {
     },
   },
 });
+
+export default useChatStore;

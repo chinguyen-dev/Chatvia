@@ -13,12 +13,8 @@ use Illuminate\Support\Facades\Broadcast;
 | used to check if an authenticated user can listen to the channel.
 |
 */
-
-Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-    return (int)$user->id === (int)$id;
-});
-
-Broadcast::channel('User.{id}', fn(User $user,int $id) => auth()->id() === $id);
+Broadcast::channel('User.{id}', fn(User $user, int $id) => auth()->id() === $id);
 Broadcast::channel('Typing', fn() => auth()->check());
 Broadcast::channel('Room.{id}', fn(User $user, int $id) => $user->canJoinRoom($id) && ['a']);
+
 

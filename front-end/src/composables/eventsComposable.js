@@ -1,5 +1,5 @@
 import { ref } from "vue";
-export const useEvent = () => {
+const useEvent = () => {
   const modal = ref(false);
   const positionY = ref(0);
 
@@ -13,12 +13,13 @@ export const useEvent = () => {
   const toggleEmoji = (state) => {
     document.addEventListener("click", function (event) {
       const targetElement = event.target;
-      const EmojiPicker = document.querySelector(".v3-emoji-picker");
+      const emojiPickerElement = document.querySelector(".v3-emoji-picker");
       if (targetElement.matches("#modal")) modal.value = false;
       if (
         !targetElement.matches("#dropdownButton") &&
         !targetElement.matches(".ri-emotion-happy-line") &&
-        !EmojiPicker.contains(targetElement)
+        emojiPickerElement &&
+        !emojiPickerElement.contains(targetElement)
       ) {
         state.value = false;
       }
@@ -46,3 +47,5 @@ export const useEvent = () => {
     getVerticalPosition,
   };
 };
+
+export default useEvent;

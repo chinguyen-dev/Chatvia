@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ContactController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
@@ -25,7 +26,8 @@ Route::prefix('/v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::apiResources([
             'chats' => ChatController::class,
-            'users' => UserController::class
+            'users' => UserController::class,
+            'contacts' => ContactController::class
         ]);
 
         Route::prefix('/chats')->group(function () {

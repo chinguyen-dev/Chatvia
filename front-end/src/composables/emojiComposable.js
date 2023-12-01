@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-export const useEmoji = () => {
+const useEmoji = () => {
   const emoji = ref(false);
   const input = ref("");
 
@@ -15,3 +15,5 @@ export const useEmoji = () => {
     handleToggleEmoji,
   };
 };
+
+export default useEmoji;

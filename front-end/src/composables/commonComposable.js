@@ -1,4 +1,4 @@
-export const useCommon = () => {
+const useCommon = () => {
   const findSenderById = (room) => {
     const user = JSON.parse(
       localStorage.getItem(import.meta.env.VITE_STORAGE_USER)
@@ -13,5 +13,7 @@ export const useCommon = () => {
     const arr = name.split(" ");
     return arr.slice(arr.length - Math.ceil(arr.length / 2)).join(" ");
   };
+
   return { findSenderById, convertName };
 };
+export default useCommon;

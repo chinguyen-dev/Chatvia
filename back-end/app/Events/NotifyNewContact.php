@@ -2,28 +2,24 @@
 
 namespace App\Events;
 
-use App\Http\Resources\MessageResource;
-use App\Models\Message;
+use App\Http\Resources\ContactResource;
+use App\Models\Contact;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendMsg implements ShouldBroadcast
+class NotifyNewContact implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    private string $channelName;
-    private Message $message;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Message $message)
+    public function __construct(public Contact $contact)
     {
-        $this->message = $message;
-        if ($message->receiver_id) $this->channelName = "User.{$message->receiver_id}";
+        //
     }
 
     /**
@@ -33,19 +29,16 @@ class SendMsg implements ShouldBroadcast
      */
     public function broadcastOn(): PrivateChannel|array
     {
-        return new PrivateChannel($this->channelName);
+        return new PrivateChannel("User.{$this->contact->contacted_id}");
     }
 
     public function broadcastAs(): string
     {
-        return 'ON-CHAT';
+        return 'NEW-CONTACT';
     }
 
-    public function broadcastWith(): array
+    public function broadcastWith(): ContactResource
     {
-        return [
-            'room_id' => $this->message->room_id,
-            'message' => new MessageResource($this->message)
-        ];
+        return new ContactResource($this->contact);
     }
 }

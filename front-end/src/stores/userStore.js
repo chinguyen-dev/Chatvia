@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import userService from "@/services/userService";
 
-export const useUserStore = defineStore("user", {
+const useUserStore = defineStore("user", {
   state: () => ({
     user:
       JSON.parse(localStorage.getItem(import.meta.env.VITE_STORAGE_USER)) ||
@@ -16,7 +16,8 @@ export const useUserStore = defineStore("user", {
 
     async login(credentials) {
       try {
-        this.user = await userService.login(credentials);
+        const response = await userService.login(credentials);
+        this.user = response.data;
         localStorage.setItem(
           import.meta.env.VITE_STORAGE_TOKEN,
           this.user.access_token
@@ -47,3 +48,4 @@ export const useUserStore = defineStore("user", {
     },
   },
 });
+export default useUserStore;

@@ -1,8 +1,7 @@
 import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/userStore";
-import { useChatStore } from "@/stores/chatStore";
+import { useUserStore, useChatStore } from "@/stores";
 
-export const useAuth = () => {
+const useAuth = () => {
   const router = useRouter();
   const userStore = useUserStore();
   const chatStore = useChatStore();
@@ -27,3 +26,5 @@ export const useAuth = () => {
 
   return { handleLogout, handleLogin, handleRegister };
 };
+
+export default useAuth;
