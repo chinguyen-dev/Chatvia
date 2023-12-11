@@ -1,9 +1,9 @@
 <script setup>
-import { useEvent, useChat, useContact } from "@/composables";
-import { defineAsyncComponent, onMounted, ref } from "vue";
+import { useChat, useContact, useEvent } from "@/composables";
+import { defineAsyncComponent, onMounted } from "vue";
 
-const UserCarousel = defineAsyncComponent(() =>
-  import("./components/UserCarousel.vue")
+const ContactCarousel = defineAsyncComponent(() =>
+  import("./components/ContactCarousel.vue")
 );
 const SearchChat = defineAsyncComponent(() =>
   import("./components/SearchChat.vue")
@@ -16,88 +16,39 @@ const Modal = defineAsyncComponent(() => import("@/components/Modal.vue"));
 
 const {
   rooms,
-  fetchRoom,
   search,
   users,
   handleOnSearch,
-  handleOnChat,
   handleFindByEmailUsers,
   handleCreateRoom,
 } = useChat();
 
-const { handleCreateContact } = useContact();
-
+const { contacts, handleCreateContact, fetchContact } = useContact();
 const { modal, positionY, getVerticalPosition } = useEvent();
 
-const userCarousel = ref([
-  {
-    name: "Võ Chí Nguyên",
-    avatar: "",
-  },
-  {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
-  },
-  {
-    name: "Võ Chí Nguyên",
-    avatar: "",
-  },
-  {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
-  },
-  {
-    name: "Võ Chí Nguyên",
-    avatar: "",
-  },
-  {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
-  },
-  {
-    name: "Võ Chí Nguyên",
-    avatar: "",
-  },
-  {
-    name: "Cao Thị Trúc Linh",
-    avatar: "",
-  },
-]);
-
-onMounted(async () => {
-  await fetchRoom();
-  getVerticalPosition("chat-list");
-});
+await fetchContact();
+onMounted(async () => getVerticalPosition("chat-list"));
 </script>
 
 <template>
   <div class="flex flex-col">
-    <!-- Search -->
-    <div class="px-6 pt-6">
-      <h2 class="mb-6 font-semibold text-xl text-gray49">Chats</h2>
+    <div class="p-6">
+      <!-- Search Chat -->
       <SearchChat
         type="text"
         :on-submit="handleOnSearch"
         placeholder="Tìm kiếm"
         @toggle-modal="() => (modal = !modal)"
       />
-    </div>
-    <!-- UserCarousel -->
-    <div class="px-6 pb-6">
-      <UserCarousel :users="userCarousel" />
+      <!-- UserCarousel -->
+      <ContactCarousel :contacts="contacts" :on-submit="handleCreateRoom" />
     </div>
     <!-- Rooms Chat -->
     <div class="px-2">
       <h5 class="px-4 mb-3 text-[16px] font-semibold">Recent</h5>
       <div class="relative group h-[calc(100vh_-_280px)]">
         <div id="chat-list" class="absolute p-0 m-0 top-0 bottom-0 w-full">
-          <RoomChat
-            v-for="room in rooms"
-            :key="room.room_id"
-            :room="room"
-            :class="room.active && 'active'"
-            @click="handleOnChat(room)"
-          />
+          <RoomChat />
         </div>
         <!-- Scroll -->
         <div
@@ -113,7 +64,7 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-
+    <!-- Modal -->
     <Transition>
       <Modal
         title="Thêm bạn"
@@ -153,7 +104,7 @@ onMounted(async () => {
               >
                 <div class="flex items-center">
                   <!-- Avatar -->
-                  <Avatar :hidden="false" :user="user" :size="40" />
+                  <Avatar :user="user" :size="40" />
                   <!-- End -->
                   <div class="text-sm ml-3">
                     <div class="font-medium text-[#081c36]">

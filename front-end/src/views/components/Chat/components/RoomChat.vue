@@ -1,24 +1,24 @@
 <script setup>
-import { useCommon } from "@/composables";
+import { useChat, useCommon } from "@/composables";
 import { defineAsyncComponent } from "vue";
-defineProps({
-  room: {
-    type: Object,
-    required: true,
-  },
-});
 const Avatar = defineAsyncComponent(() => import("@/components/Avatar.vue"));
 const Badge = defineAsyncComponent(() => import("@/components/Badge.vue"));
 const { findSenderById, convertName } = useCommon();
-
+const { rooms, fetchRoom, handleOnChat } = useChat();
 const findMessgaeLatest = ({ messages }) => messages[messages.length - 1];
+await fetchRoom();
 </script>
 
 <template>
   <div
-    class="hover:bg-[#e6ebf5] border-t-[1px] border-solid border-[#f5f7fb] flex items-start px-5 py-[15px] rounded-[5px] cursor-pointer transition-all duration-[0.4s] ease-[cubic-bezier(0.25,0.1,0.25,1.0)]"
+    v-for="room in rooms"
+    :key="room.room_id"
+    @click="handleOnChat(room)"
+    :class="`hover:bg-[#e6ebf5] border-t-[1px] border-solid border-[#f5f7fb]
+     flex items-start px-5 py-[15px] rounded-[5px] cursor-pointer transition-all duration-[0.4s]
+      ease-[cubic-bezier(0.25,0.1,0.25,1.0)] ${room.active && 'active'}`"
   >
-    <Avatar class="me-4" :user="findSenderById(room)" :size="40" />
+    <Avatar class="me-4" :user="findSenderById(room)" :size="40" status />
     <div class="flex-grow">
       <h5
         :class="{

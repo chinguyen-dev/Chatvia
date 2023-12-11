@@ -94,7 +94,12 @@ onUpdated(() => scrollHeight(".scrollbar"));
       <div class="p-6 border border-solid border-[#f0eff5]">
         <div class="grid grid-cols-2">
           <div class="flex items-center">
-            <Avatar class="me-3" :user="senderOrGroup(room)" :size="40" />
+            <Avatar
+              class="me-3"
+              :user="senderOrGroup(room)"
+              :size="40"
+              status
+            />
             <h5 class="flex-grow font-semibold text-base">
               {{ room?.name || convertName(findSenderById(room)?.name) }}
             </h5>

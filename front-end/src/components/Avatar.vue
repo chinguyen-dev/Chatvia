@@ -1,9 +1,9 @@
 <script setup>
 defineProps({
   user: Object,
-  hidden: {
+  status: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   size: {
     type: Number,
@@ -42,7 +42,7 @@ const getCharAtByName = (name) => {
       {{ getCharAtByName(user?.name) }}
     </span>
     <span
-      v-if="hidden"
+      v-if="status"
       class="absolute right-0 bottom-0 border-[2px] border-solid border-white rounded-[50%] bg-[#06d6a0] w-[10px] h-[10px]"
     ></span>
   </div>

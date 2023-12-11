@@ -34,19 +34,19 @@ class ChatController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RoomResource
+    public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'members' => 'required'
-        ]);
-        $room = $this->chatService->createGroupChat([
-            'name' => $request->input('name'),
-            'type' => 'room',
-            'room_img' => $request->input('room_img'),
-            'creator_id' => auth()->id()
-        ], $request->input('members'));
-        return new RoomResource($room);
+//        $request->validate([
+//            'name' => 'required',
+//            'members' => 'required'
+//        ]);
+//        $room = $this->chatService->createGroupChat([
+//            'name' => $request->input('name'),
+//            'type' => 'room',
+//            'room_img' => $request->input('room_img'),
+//            'creator_id' => auth()->id()
+//        ], $request->input('members'));
+//        return new RoomResource($room);
     }
 
 

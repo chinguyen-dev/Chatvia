@@ -6,7 +6,7 @@ import { computed, defineAsyncComponent } from "vue";
 
 const Invitation = defineAsyncComponent(() => import("./Invitation.vue"));
 const contactStore = useContactStore();
-const { handleRevokeInvitation } = useContact();
+const { handleRevokeInvitation, handleAcceptInvitation } = useContact();
 
 const tab = computed(() => contactStore.currentTab);
 </script>
@@ -22,8 +22,15 @@ const tab = computed(() => contactStore.currentTab);
     <div class="body">
       <div class="px-4">
         <template v-if="tab?.type === 'invitation'">
-          <Invitation :contacts="contactStore.getContactAwaiting" received />
-          <Invitation :contacts="contactStore.getContactSent" />
+          <Invitation
+            :contacts="contactStore.getContactAwaiting"
+            :on-accept="handleAcceptInvitation"
+            received
+          />
+          <Invitation
+            :contacts="contactStore.getContactSent"
+            :on-revoke="handleRevokeInvitation"
+          />
         </template>
       </div>
     </div>

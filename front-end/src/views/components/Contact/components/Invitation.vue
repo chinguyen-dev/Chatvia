@@ -26,10 +26,14 @@ const Avatar = defineAsyncComponent(() => import("@/components/Avatar.vue"));
 
 const handleOnRevoke = (id) => {
   if (!onRevoke) return;
-  console.log(id);
+  onRevoke(id);
 };
-const handleOnAccept = () => {
+const handleOnAccept = (id) => {
   if (!onAccept) return;
+  onAccept({
+    id,
+    status: "accepted",
+  });
 };
 const handleOnIgnore = () => {
   if (!onIgnore) return;
@@ -87,6 +91,7 @@ const handleOnIgnore = () => {
             Từ chối
           </button>
           <button
+            @click="handleOnAccept(contact?.contact_id)"
             type="button"
             class="block basis-1/2 ml-1 text-white font-semibold bg-[#7269ef] py-2 rounded"
           >

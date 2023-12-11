@@ -35,7 +35,6 @@ const useChatStore = defineStore("chat", {
       });
       return count;
     },
-    loading: ({ rooms }) => false,
   },
   actions: {
     setState({ rooms, room, isLoading, typing }) {
@@ -62,18 +61,21 @@ const useChatStore = defineStore("chat", {
 
     async createRoom({ type, user }) {
       const userStore = useUserStore();
+      const members = [{ ...user }, { ...userStore.user }];
       if (type === "people") {
-        this.room = {
-          room_id: 0,
-          room_name: null,
-          room_type: "people",
-          creator_id: userStore.user.id,
-          members: [{ ...user }, { ...userStore.user }],
+        const existingRoom = this.rooms.find(({ members, room_type }) => {
+          return (
+            room_type === type &&
+            members.some((member) => member.id === user.id)
+          );
+        });
+        this.room = existingRoom || {
+          room_type: type,
+          members,
           messages: [],
         };
-      } else {
+        !existingRoom && this.rooms.push(this.room);
       }
-      this.rooms.push(this.room);
     },
   },
 });

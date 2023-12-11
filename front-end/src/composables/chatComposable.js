@@ -111,7 +111,6 @@ const useChat = () => {
     handleFindByEmailUsers,
     rooms: computed(() => chatStore.getRooms),
     currentRoom: computed(() => chatStore.room),
-    loading: computed(() => chatStore.loading),
     typing: computed(() => chatStore.typing),
   };
 };

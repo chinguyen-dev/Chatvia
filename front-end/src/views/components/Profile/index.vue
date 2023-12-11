@@ -5,6 +5,7 @@ import { useCommon } from "@/composables";
 const Dropdown = defineAsyncComponent(() =>
   import("@/components/Dropdown/index.vue")
 );
+const Avatar = defineAsyncComponent(() => import("@/components/Avatar.vue"));
 
 const Accordion = defineAsyncComponent(() =>
   import("./components/Accordion/index.vue")
@@ -57,11 +58,12 @@ const user = computed(() => userStore.user);
     </div>
     <div class="flex flex-col p-6 border-b">
       <div class="relative mb-6 inline-block my-0 mx-auto">
-        <img
+        <!-- <img
           class="w-full max-w-[96px] h-auto rounded-full p-1 border border-solid border-[#f0eff5]"
           :src="user?.avatar"
           alt=""
-        />
+        /> -->
+        <Avatar class="text-2xl" :user="user" :size="96" />
         <button
           type="button"
           class="absolute block rounded-full bg-[#e6ebf5] right-0 bottom-0 left-auto w-9 h-9"

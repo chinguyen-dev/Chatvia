@@ -1,6 +1,6 @@
 <script setup>
 import websocketService from "@/services/websocket";
-import { computed, defineAsyncComponent, onMounted, ref } from "vue";
+import { computed, defineAsyncComponent, onBeforeMount, ref } from "vue";
 import { useAuth, useChat, useContact } from "@/composables";
 import { useUserStore } from "@/stores";
 import { useRouter } from "vue-router";
@@ -26,18 +26,12 @@ const userStore = useUserStore();
 
 const componentCurrent = ref("chat");
 const { handleLogout } = useAuth();
-const {
-  typing,
-  loading,
-  currentRoom,
-  handleTyping,
-  handleSendChat,
-  handleNewMsg,
-} = useChat();
-const { setContactStore } = useContact();
+const { typing, currentRoom, handleTyping, handleSendChat, handleNewMsg } =
+  useChat();
+const { contactStore } = useContact();
 
 const Component = computed(() => {
-  let component;
+  let component = Chat;
   switch (componentCurrent.value.toUpperCase()) {
     case "PROFILE":
       component = Profile;
@@ -54,16 +48,31 @@ const Component = computed(() => {
   }
   return component;
 });
-
-onMounted(() => {
+onBeforeMount(() => {
   websocketService.connect();
   websocketService.subscribe(
     { channelName: `User.${userStore.user?.id}`, type: "private" },
     ({ channel, typing }) => {
       channel
         .listen(".ON-CHAT", async (response) => handleNewMsg(response))
-        .listen(".NEW-CONTACT", (response) => setContactStore(response))
-        .listen(".REVOKE-INVITATION", (response) => console.log(response));
+        .listen(".NEW-CONTACT", ({ contact }) =>
+          contactStore.setState({ contact })
+        )
+        .listen(".REVOKE-INVITATION", ({ contact_id }) =>
+          contactStore.removeContact(contact_id)
+        )
+        .listen(".ACCEPTED-INVITATION", ({ contact_id, status }) => {
+          const contacts = contactStore.data?.map((contact) => {
+            if (contact?.contact_id === contact_id) {
+              return {
+                ...contact,
+                status,
+              };
+            }
+            return contact;
+          });
+          contactStore.setState({ contacts });
+        });
       typing.listenForWhisper("typing", (response) => handleTyping(response));
     }
   );
@@ -79,7 +88,10 @@ onMounted(() => {
     <div class="min-w-[380px] max-w-[380px] h-screen bg-[#f5f7fb] me-1">
       <div class="tab-content">
         <keep-alive>
-          <component :is="Component" />
+          <Suspense>
+            <component :is="Component" />
+            <template #fallback><Loading /></template>
+          </Suspense>
         </keep-alive>
       </div>
     </div>
@@ -90,6 +102,5 @@ onMounted(() => {
       :typing="typing"
     />
     <ContactBox v-else />
-    <Loading v-if="loading" />
   </div>
 </template>

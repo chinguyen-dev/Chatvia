@@ -1,14 +1,6 @@
 <script setup>
-import useContactStore from "@/stores/contactStore";
-import { onMounted } from "vue";
-
-const contactStore = useContactStore();
-
-const handleChangeTab = (tab) => contactStore.setState({ tab });
-
-onMounted(() => {
-  contactStore.getContacts();
-});
+import { useContact } from "@/composables";
+const { tabs, handleChangeTab } = useContact();
 </script>
 
 <template>
@@ -17,7 +9,7 @@ onMounted(() => {
       <h4 class="text-xl text-[#343a40] font-semibold">Danh bạ</h4>
     </div>
     <div
-      v-for="tab in contactStore.getTabs"
+      v-for="tab in tabs"
       :key="tab?.id"
       :class="[tab?.active && 'bg-[#e6ebf5]', 'hover:bg-[#e6ebf5]']"
       @click="handleChangeTab(tab)"
