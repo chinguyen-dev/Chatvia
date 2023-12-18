@@ -60,19 +60,30 @@ const useContactStore = defineStore("contact", {
     },
     getContactCarousel({ data }) {
       const userStore = useUserStore();
-      return data?.map((contact) => {
-        const user =
-          contact.sender.id === userStore.user.id
-            ? {
-                ...contact?.receiver,
-              }
-            : { ...contact?.sender };
-        const userArr = user.name.split(" ");
-        return {
-          ...user,
-          displayName: userArr[userArr.length - 1],
-        };
-      });
+      return data
+        ?.filter((contact) => contact?.status !== "waiting")
+        .map((contact) => {
+          const user =
+            contact.sender.id === userStore.user?.id
+              ? {
+                  ...contact?.receiver,
+                }
+              : { ...contact?.sender };
+          const userArr = user.name.split(" ");
+          return {
+            ...user,
+            displayName: userArr[userArr.length - 1],
+          };
+        });
+    },
+    getContact({ data }) {
+      const userStore = useUserStore();
+      const user = userStore.user;
+      return data
+        ?.filter((contact) => contact?.status !== "waiting")
+        .map(({ sender, receiver }) =>
+          sender.id === user?.id ? receiver : sender
+        );
     },
   },
   actions: {

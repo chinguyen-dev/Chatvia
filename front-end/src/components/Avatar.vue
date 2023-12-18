@@ -23,7 +23,7 @@ const getCharAtByName = (name) => {
 
 <template>
   <div
-    class="relative h-full mx-auto"
+    class="relative mx-auto"
     :style="{
       width: `${size}px`,
       height: `${size}px`,
@@ -37,7 +37,7 @@ const getCharAtByName = (name) => {
     />
     <span
       v-else
-      class="flex justify-center items-center h-full font-medium bg-[#7269ef40] text-[#7269ef] rounded-full text-primary"
+      class="flex justify-center items-center h-full font-medium bg-[#7269ef40] rounded-full text-primary"
     >
       {{ getCharAtByName(user?.name) }}
     </span>

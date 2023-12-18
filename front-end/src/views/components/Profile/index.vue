@@ -58,12 +58,13 @@ const user = computed(() => userStore.user);
     </div>
     <div class="flex flex-col p-6 border-b">
       <div class="relative mb-6 inline-block my-0 mx-auto">
-        <!-- <img
+        <img
+          v-if="user?.avatar"
           class="w-full max-w-[96px] h-auto rounded-full p-1 border border-solid border-[#f0eff5]"
           :src="user?.avatar"
           alt=""
-        /> -->
-        <Avatar class="text-2xl" :user="user" :size="96" />
+        />
+        <Avatar v-else class="text-2xl" :user="user" :size="96" />
         <button
           type="button"
           class="absolute block rounded-full bg-[#e6ebf5] right-0 bottom-0 left-auto w-9 h-9"
@@ -80,7 +81,7 @@ const user = computed(() => userStore.user);
         class="flex items-center justify-center text-sm text-muted truncate mb-1"
       >
         <p
-          class="flex items-center justify-center w-[11px] h-[11px] bg-[#06d6a0] rounded-full mr-1"
+          class="flex items-center justify-center w-3 h-3 bg-[#06d6a0] rounded-full mr-1"
         >
           <span class="block w-[3px] h-[3px] bg-white rounded-full"></span>
         </p>

@@ -26,25 +26,10 @@ const useEvent = () => {
     });
   };
 
-  const getVerticalPosition = (el) => {
-    const chatListElement = document.getElementById(el);
-    chatListElement.addEventListener("scroll", function () {
-      const scrollTop = chatListElement.scrollTop;
-      const scrollHeight = chatListElement.scrollHeight;
-      const clientHeight = chatListElement.clientHeight;
-      const percent = Math.ceil(
-        (scrollTop / (scrollHeight - clientHeight)) * 210
-      );
-      positionY.value = percent;
-    });
-  };
-
   return {
     modal,
-    positionY,
     scrollHeight,
     toggleEmoji,
-    getVerticalPosition,
   };
 };
 

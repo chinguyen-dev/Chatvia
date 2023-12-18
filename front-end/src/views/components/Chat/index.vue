@@ -1,6 +1,6 @@
 <script setup>
 import { useChat, useContact, useEvent } from "@/composables";
-import { defineAsyncComponent, onMounted } from "vue";
+import { defineAsyncComponent } from "vue";
 
 const ContactCarousel = defineAsyncComponent(() =>
   import("./components/ContactCarousel.vue")
@@ -24,10 +24,9 @@ const {
 } = useChat();
 
 const { contacts, handleCreateContact, fetchContact } = useContact();
-const { modal, positionY, getVerticalPosition } = useEvent();
+const { modal } = useEvent();
 
 await fetchContact();
-onMounted(async () => getVerticalPosition("chat-list"));
 </script>
 
 <template>
@@ -49,18 +48,6 @@ onMounted(async () => getVerticalPosition("chat-list"));
       <div class="relative group h-[calc(100vh_-_280px)]">
         <div id="chat-list" class="absolute p-0 m-0 top-0 bottom-0 w-full">
           <RoomChat />
-        </div>
-        <!-- Scroll -->
-        <div
-          v-if="rooms && rooms.length >= 6"
-          class="absolute opacity-0 group-hover:opacity-100 top-0 right-0 bottom-0 w-[11px] transition-opacity duration-[0.4s] ease-linear"
-        >
-          <div
-            class="scrollbar w-[7px] h-[205px] rounded-[7px] cursor-pointer bg-[#d0dae3]"
-            :style="{
-              transform: `translate3d(0px, ${positionY}px, 0px)`,
-            }"
-          ></div>
         </div>
       </div>
     </div>
@@ -161,7 +148,11 @@ onMounted(async () => getVerticalPosition("chat-list"));
   overflow: hidden scroll;
 
   &::-webkit-scrollbar {
-    display: none;
+    width: 7px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #b1b5b9;
   }
 }
 

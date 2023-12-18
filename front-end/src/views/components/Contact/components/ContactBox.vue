@@ -1,14 +1,20 @@
 <script setup>
-import { useContactStore } from "@/stores";
+import { useContactStore, useChatStore } from "@/stores";
 import { useContact } from "@/composables";
-
 import { computed, defineAsyncComponent } from "vue";
 
+const List = defineAsyncComponent(() => import("./List.vue"));
 const Invitation = defineAsyncComponent(() => import("./Invitation.vue"));
+
+const chatStore = useChatStore();
 const contactStore = useContactStore();
 const { handleRevokeInvitation, handleAcceptInvitation } = useContact();
 
 const tab = computed(() => contactStore.currentTab);
+const handleFilterData = computed(() => {
+  const { type } = contactStore.currentTab;
+  return type === "friend" ? contactStore.getContact : chatStore.getChatGroup;
+});
 </script>
 
 <template>
@@ -21,21 +27,24 @@ const tab = computed(() => contactStore.currentTab);
     </div>
     <div class="body">
       <div class="px-4">
-        <template v-if="tab?.type === 'invitation'">
-          <Invitation
-            :contacts="contactStore.getContactAwaiting"
-            :on-accept="handleAcceptInvitation"
-            received
-          />
-          <Invitation
-            :contacts="contactStore.getContactSent"
-            :on-revoke="handleRevokeInvitation"
-          />
-        </template>
+        <keep-alive>
+          <template v-if="tab?.type === 'invitation'">
+            <Invitation
+              :contacts="contactStore.getContactAwaiting"
+              :on-accept="handleAcceptInvitation"
+              received
+            />
+            <Invitation
+              :contacts="contactStore.getContactSent"
+              :on-revoke="handleRevokeInvitation"
+            />
+          </template>
+          <template v-else>
+            <List :type="tab?.type" :data="handleFilterData" />
+          </template>
+        </keep-alive>
       </div>
     </div>
     <div class="footer"></div>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

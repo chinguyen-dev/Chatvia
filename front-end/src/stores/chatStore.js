@@ -35,6 +35,8 @@ const useChatStore = defineStore("chat", {
       });
       return count;
     },
+    getChatGroup: ({ rooms }) =>
+      rooms?.filter((room) => room?.room_type !== "people"),
   },
   actions: {
     setState({ rooms, room, isLoading, typing }) {
